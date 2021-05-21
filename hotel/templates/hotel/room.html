@@ -11,6 +11,7 @@
         <li>Этаж: {{ room.floor }}</li>
         <li>Класс: {{ room.get_room_class_display }}</li>
         <li>Описание: {{ room.description }}</li>
+        <li><a href="{% url "hotel:edit" pk=room.pk %}">Изменить</a></li>
     </ul>
 </body>
 </html>
