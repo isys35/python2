@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.generic.edit import UpdateView, CreateView
-
+from django.views.generic.edit import UpdateView, CreateView, DeleteView
 
 from .forms import RoomForm
 from .models import Room
@@ -31,4 +30,9 @@ class RoomEditView(UpdateView):
 class RoomCreateView(CreateView):
     template_name = 'hotel/create_room.html'
     form_class = RoomForm
+    success_url = reverse_lazy('hotel:main')
+
+
+class RoomDeleteView(DeleteView):
+    model = Room
     success_url = reverse_lazy('hotel:main')
