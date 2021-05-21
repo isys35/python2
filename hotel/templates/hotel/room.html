@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>Номер {{ room.number }}</h1>
+    <ul>
+        <li>Кол-во комнат: {{ room.number_of_rooms }}</li>
+        <li>Этаж: {{ room.floor }}</li>
+        <li>Класс: {{ room.get_room_class_display }}</li>
+        <li>Описание: {{ room.description }}</li>
+    </ul>
+</body>
+</html>

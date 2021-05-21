@@ -12,3 +12,10 @@ class Room(models.Model):
     number_of_rooms = models.PositiveIntegerField(verbose_name='Кол-во комнат', db_index=True)
     description = models.TextField(null=True, blank=True, verbose_name='Описание')
     room_class = models.CharField(max_length=10, choices=ROOM_CLASS, db_index=True)
+
+    def __str__(self):
+        return "Номер №{}".format(self.number)
+
+    class Meta:
+        verbose_name_plural = 'Номера'
+        verbose_name = 'Номер'
