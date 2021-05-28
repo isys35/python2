@@ -1,17 +1,19 @@
 {% extends 'layout/base.html' %}
 {% block content %}
-    <h1>Номер {{ room.number }}</h1>
-    <ul>
-        <li>Кол-во комнат: {{ room.number_of_rooms }}</li>
-        <li>Этаж: {{ room.floor }}</li>
-        <li>Класс: {{ room.get_room_class_display }}</li>
-        <li>Описание: {{ room.description }}</li>
-        {% if user.is_authenticated %}
-        <li>
-            <a href="{% url "hotel:edit" pk=room.pk %}">Изменить</a>
-            <a href="{% url "hotel:delete" pk=room.pk %}">Удалить</a>
-            <a href="{% url "hotel:reservation" pk=room.pk %}">Зарезервировать</a>
-        </li>
-        {% endif %}
-    </ul>
+    <div class="container">
+        <h1>Номер {{ room.number }}</h1>
+        <ul>
+            <li>Кол-во комнат: {{ room.number_of_rooms }}</li>
+            <li>Этаж: {{ room.floor }}</li>
+            <li>Класс: {{ room.get_room_class_display }}</li>
+            <li>Описание: {{ room.description }}</li>
+            {% if user.is_authenticated %}
+            <li>
+                <a href="{% url "hotel:edit" pk=room.pk %}">Изменить</a>
+                <a href="{% url "hotel:delete" pk=room.pk %}">Удалить</a>
+                <a href="{% url "hotel:reservation" pk=room.pk %}">Зарезервировать</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
 {% endblock %}

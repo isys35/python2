@@ -7,7 +7,7 @@ from hotel.models import Room, Reservation
 class RoomForm(ModelForm):
     class Meta:
         model = Room
-        fields = '__all__'
+        fields = ['number', 'floor', 'number_of_rooms', 'description', 'room_class']
 
 
 class ReservationForm(ModelForm):
