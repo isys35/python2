@@ -11,7 +11,7 @@
             <li>
                 <a href="{% url "hotel:edit" pk=room.pk %}">Изменить</a>
                 <a href="{% url "hotel:delete" pk=room.pk %}">Удалить</a>
-                <a href="{% url "hotel:reservation" pk=room.pk %}">Зарезервировать</a>
+                <a href="{% url "hotel:reservation" pk=room.pk %}">Забронировать</a>
             </li>
             {% endif %}
         </ul>
