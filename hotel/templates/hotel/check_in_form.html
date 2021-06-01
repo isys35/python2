@@ -1,11 +1,23 @@
 {% extends 'layout/base.html' %}
 {% block content %}
     <div class="container">
+        <h3>Заселение в номер {{ room.number }}</h3>
+        {% if reservations %}
+            {% for reservation in reservations %}
+                <p>{{ reservation }} <a href="#" class="btn btn-success">Исп. бронь</a></p>
+            {% endfor %}
+        {% endif %}
+        <h2></h2>
         <form method="post">
             {% csrf_token %}
             {% if error_date %}
                 <p>Данная дата уже забронирована!!</p>
             {% endif %}
+            <div class="form-group">
+                {{ form.user.errors }}
+                <label for="{{ form.user.id_for_label }}">Пользователь: </label>
+                <input class="form-control" id="{{ form.user.id_for_label }}" name="{{ form.user.name }}" required="">
+            </div>
             <div class="form-group">
                 {{ form.started_at.errors }}
                 <label for="{{ form.started_at.id_for_label }}">Начальное время брони: </label>
@@ -16,20 +28,7 @@
                 <label for="{{ form.ended_at.id_for_label }}">Конечное время брони: </label>
                 <input type="date" class="form-control" id="{{ form.ended_at.id_for_label }}" name="{{ form.ended_at.name }}" required="">
             </div>
-            <div class="form-group">
-                {{ form.description.errors }}
-                <label for="{{ form.description.id_for_label }}">Описание: </label>
-                <textarea class="form-control" rows="5" id="{{ form.description.id_for_label }}" name="{{ form.description.name }}"></textarea>
-            </div>
-            <input type="submit" class="btn btn-success" value="Забронировать">
+            <input type="submit" class="btn btn-success" value="Заселить">
         </form>
-        {% if reservations %}
-        <p>Забронированные даты:</p>
-        <ul>
-            {% for reservation in reservations %}
-                <li>C {{ reservation.started_at|date:'d.m.Y' }} по {{ reservation.ended_at|date:'d.m.Y' }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
     </div>
 {% endblock %}

@@ -9,9 +9,14 @@ class Room(models.Model):
         ('STD', 'Стандарт'),
         ('VIP', 'VIP'),
     ]
+    ROOMS_COUNT = [
+        (2, 2),
+        (3, 3),
+        (4, 4),
+    ]
     number = models.PositiveIntegerField(unique=True, verbose_name="Номер комнаты")
     floor = models.PositiveIntegerField(verbose_name="Этаж")
-    number_of_rooms = models.PositiveIntegerField(verbose_name='Кол-во комнат', db_index=True)
+    number_of_rooms = models.PositiveIntegerField(verbose_name='Кол-во комнат', choices=ROOMS_COUNT, db_index=True)
     description = models.TextField(null=True, blank=True, verbose_name='Описание')
     room_class = models.CharField(max_length=10, choices=ROOM_CLASS, db_index=True, verbose_name='Класс номера')
 
@@ -35,4 +40,10 @@ class Reservation(models.Model):
         verbose_name = 'Бронь'
 
     def __str__(self):
-        return "Бронь пользователя {}".format(self.user.username)
+        return "Бронь комнаты {} пользователем {}".format(self.room, self.user.username)
+
+
+class CheckIn(Reservation):
+    class Meta:
+        verbose_name_plural = 'Заселения'
+        verbose_name = 'Заселение'

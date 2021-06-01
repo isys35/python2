@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import Q
 from django.http import HttpResponse
@@ -74,11 +75,12 @@ def make_reservation(request: WSGIRequest, pk):
             reservation.user = request.user
             reservation.room_id = pk
             intersections_of_dates = Reservation.objects.filter(
-                Q(started_at__gte= reservation.started_at, ended_at__lte=reservation.ended_at) |
+                Q(started_at__gte=reservation.started_at, ended_at__lte=reservation.ended_at) |
                 Q(started_at__lte=reservation.started_at, ended_at__gte=reservation.ended_at) |
                 Q(started_at__gte=reservation.started_at, started_at__lte=reservation.ended_at,
                   ended_at__gte=reservation.ended_at) |
-                Q(ended_at__gte=reservation.started_at, ended_at__lte=reservation.ended_at, started_at__lte=reservation.ended_at)
+                Q(ended_at__gte=reservation.started_at, ended_at__lte=reservation.ended_at,
+                  started_at__lte=reservation.ended_at)
             ).filter(room_id=pk)
             if intersections_of_dates:
                 context = {'form': reservation_form, 'reservations': reservations, 'error_date': True}
@@ -90,5 +92,20 @@ def make_reservation(request: WSGIRequest, pk):
             context = {'form': reservation_form, 'reservations': reservations}
             return render(request, "hotel/reservation_form.html", context)
     reservation_form = ReservationForm()
-    context = {'form': reservation_form,  'reservations': reservations}
+    context = {'form': reservation_form, 'reservations': reservations}
     return render(request, "hotel/reservation_form.html", context)
+
+
+@login_required
+def chek_in(request: WSGIRequest, room_id, reservation_id=None):
+    reservations = Reservation.objects.filter(room_id=room_id)
+    context = {'room': Room.objects.get(pk=room_id), 'reservations': reservations}
+    if not reservation_id:
+        users = User.objects.all()
+
+    return render(request, "hotel/check_in_form.html", context)
+
+
+@login_required
+def check_in_by_reservation(request: WSGIRequest, pk):
+    pass

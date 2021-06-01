@@ -6,6 +6,8 @@ from hotel import views
 app_name = "hotel"
 
 urlpatterns = [
+    path('room/check-in/<int:room_id>/<int:reservation_id>', views.chek_in, name='check-in'),
+    path('room/check-in/<int:room_id>', views.chek_in, name='check-in'),
     path('room/delete/<int:pk>', login_required(views.RoomDeleteView.as_view()), name='delete'),
     path('room/create/', login_required(views.RoomCreateView.as_view()), name='add'),
     path('room/edit/<int:pk>', login_required(views.RoomEditView.as_view()), name='edit'),
