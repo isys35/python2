@@ -66,29 +66,29 @@ def logout_view(request: WSGIRequest):
 
 @login_required
 def make_reservation(request: WSGIRequest, pk):
-    room = Room.objects.get(pk=pk)
-    reservations = Reservation.objects.filter(room=room)
+    reservations = Reservation.objects.filter(room_id=pk)
     if request.method == 'POST':
         reservation_form = ReservationForm(request.POST)
         if reservation_form.is_valid():
             reservation = reservation_form.save(commit=False)
             reservation.user = request.user
-            reservation.room = room
+            reservation.room_id = pk
             intersections_of_dates = Reservation.objects.filter(
                 Q(started_at__gte= reservation.started_at, ended_at__lte=reservation.ended_at) |
                 Q(started_at__lte=reservation.started_at, ended_at__gte=reservation.ended_at) |
-                Q(started_at__gte=reservation.started_at, started_at__lte=reservation.ended_at, ended_at__gte=reservation.ended_at) |
+                Q(started_at__gte=reservation.started_at, started_at__lte=reservation.ended_at,
+                  ended_at__gte=reservation.ended_at) |
                 Q(ended_at__gte=reservation.started_at, ended_at__lte=reservation.ended_at, started_at__lte=reservation.ended_at)
-            )
+            ).filter(room_id=pk)
             if intersections_of_dates:
-                context = {'form': reservation_form, 'room': room, 'reservations': reservations, 'error_date': True}
+                context = {'form': reservation_form, 'reservations': reservations, 'error_date': True}
                 return render(request, "hotel/reservation_form.html", context)
             reservation.save()
             reservation_form.save_m2m()
-            return redirect('hotel:main')
+            return redirect('hotel:detail', pk)
         else:
-            context = {'form': reservation_form, 'room': room, 'reservations': reservations}
+            context = {'form': reservation_form, 'reservations': reservations}
             return render(request, "hotel/reservation_form.html", context)
     reservation_form = ReservationForm()
-    context = {'form': reservation_form, 'room': room, 'reservations': reservations}
+    context = {'form': reservation_form,  'reservations': reservations}
     return render(request, "hotel/reservation_form.html", context)
