@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Q
 
 
 class Room(models.Model):
@@ -23,9 +24,8 @@ class Room(models.Model):
 
 
 class Reservation(models.Model):
-    room = models.ForeignKey(Room, on_delete=models.CASCADE, verbose_name='Номер')
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, verbose_name='Номер', related_name="booked")
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
-    # TODO: Сделать валидацию по времемени(started_at>now, ended_at>started_at)
     description = models.TextField(null=True, blank=True)
     started_at = models.DateTimeField()
     ended_at = models.DateTimeField()

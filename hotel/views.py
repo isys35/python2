@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.handlers.wsgi import WSGIRequest
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -66,17 +67,28 @@ def logout_view(request: WSGIRequest):
 @login_required
 def make_reservation(request: WSGIRequest, pk):
     room = Room.objects.get(pk=pk)
+    reservations = Reservation.objects.filter(room=room)
     if request.method == 'POST':
         reservation_form = ReservationForm(request.POST)
         if reservation_form.is_valid():
             reservation = reservation_form.save(commit=False)
             reservation.user = request.user
+            reservation.room = room
+            intersections_of_dates = Reservation.objects.filter(
+                Q(started_at__gte= reservation.started_at, ended_at__lte=reservation.ended_at) |
+                Q(started_at__lte=reservation.started_at, ended_at__gte=reservation.ended_at) |
+                Q(started_at__gte=reservation.started_at, started_at__lte=reservation.ended_at, ended_at__gte=reservation.ended_at) |
+                Q(ended_at__gte=reservation.started_at, ended_at__lte=reservation.ended_at, started_at__lte=reservation.ended_at)
+            )
+            if intersections_of_dates:
+                context = {'form': reservation_form, 'room': room, 'reservations': reservations, 'error_date': True}
+                return render(request, "hotel/reservation_form.html", context)
             reservation.save()
             reservation_form.save_m2m()
             return redirect('hotel:main')
         else:
-            context = {'form': reservation_form, 'room': room}
+            context = {'form': reservation_form, 'room': room, 'reservations': reservations}
             return render(request, "hotel/reservation_form.html", context)
     reservation_form = ReservationForm()
-    context = {'form': reservation_form, 'room': room}
+    context = {'form': reservation_form, 'room': room, 'reservations': reservations}
     return render(request, "hotel/reservation_form.html", context)

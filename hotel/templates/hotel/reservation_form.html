@@ -3,11 +3,33 @@
     <div class="container">
         <form method="post">
             {% csrf_token %}
+            {% if error_date %}
+                <p>Данная дата уже забронирована!!</p>
+            {% endif %}
             <div class="form-group">
                 {{ form.started_at.errors }}
-                <label for="{{ form.started_at.id_for_label }}">Начальная дата : </label>
+                <label for="{{ form.started_at.id_for_label }}">Начальное время брони: </label>
                 <input type="date" class="form-control" id="{{ form.started_at.id_for_label }}" name="{{ form.started_at.name }}" required="">
             </div>
+            <div class="form-group">
+                {{ form.ended_at.errors }}
+                <label for="{{ form.ended_at.id_for_label }}">Конечное время брони: </label>
+                <input type="date" class="form-control" id="{{ form.ended_at.id_for_label }}" name="{{ form.ended_at.name }}" required="">
+            </div>
+            <div class="form-group">
+                {{ form.description.errors }}
+                <label for="{{ form.description.id_for_label }}">Описание: </label>
+                <textarea class="form-control" rows="5" id="{{ form.description.id_for_label }}" name="{{ form.description.name }}"></textarea>
+            </div>
+            <input type="submit" class="btn btn-success" value="Забронировать">
         </form>
+        {% if reservations %}
+        <p>Забронированные даты:</p>
+        <ul>
+            {% for reservation in reservations %}
+                <li>C {{ reservation.started_at }} по {{ reservation.ended_at }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
     </div>
 {% endblock %}
