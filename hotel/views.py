@@ -8,9 +8,10 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
+from datetime import datetime
 
 from .forms import RoomForm, ReservationForm
-from .models import Room, Reservation
+from .models import Room, Reservation, CheckIn
 
 
 def main_page(requests: WSGIRequest) -> HttpResponse:
@@ -98,14 +99,20 @@ def make_reservation(request: WSGIRequest, pk):
 
 @login_required
 def chek_in(request: WSGIRequest, room_id, reservation_id=None):
+    if request.method == 'POST':
+        tenant_username = request.POST.get('username')
+        tenant = User.objects.get(username=tenant_username)
+        started_at = datetime.strptime(request.POST['started_at'], "%Y-%m-%d")
+        ended_at = datetime.strptime(request.POST['ended_at'], "%Y-%m-%d")
+        CheckIn.objects.create(
+            user=tenant,
+            started_at=started_at,
+            ended_at=ended_at,
+            room_id=room_id
+        )
+        return redirect('hotel:detail', room_id)
     reservations = Reservation.objects.filter(room_id=room_id)
     context = {'room': Room.objects.get(pk=room_id), 'reservations': reservations}
-    if not reservation_id:
-        users = User.objects.all()
-
+    if reservation_id:
+        context['used_reservation'] = Reservation.objects.get(id=reservation_id)
     return render(request, "hotel/check_in_form.html", context)
-
-
-@login_required
-def check_in_by_reservation(request: WSGIRequest, pk):
-    pass

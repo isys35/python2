@@ -4,29 +4,35 @@
         <h3>Заселение в номер {{ room.number }}</h3>
         {% if reservations %}
             {% for reservation in reservations %}
-                <p>{{ reservation }} <a href="#" class="btn btn-success">Исп. бронь</a></p>
+                <p>{{ reservation }} <a href="{% url 'hotel:check-in' room_id=room.id reservation_id=reservation.id %}" class="btn btn-success">Исп. бронь</a></p>
             {% endfor %}
         {% endif %}
         <h2></h2>
         <form method="post">
             {% csrf_token %}
-            {% if error_date %}
-                <p>Данная дата уже забронирована!!</p>
-            {% endif %}
             <div class="form-group">
-                {{ form.user.errors }}
-                <label for="{{ form.user.id_for_label }}">Пользователь: </label>
-                <input class="form-control" id="{{ form.user.id_for_label }}" name="{{ form.user.name }}" required="">
+                <label for="username">Пользователь: </label>
+                {% if used_reservation %}
+                <input class="form-control" id="username" name="username" required="" value="{{ used_reservation.user.username }}">
+                {% else %}
+                <input class="form-control" id="username" name="username" required="">
+                {% endif %}
             </div>
             <div class="form-group">
-                {{ form.started_at.errors }}
-                <label for="{{ form.started_at.id_for_label }}">Начальное время брони: </label>
-                <input type="date" class="form-control" id="{{ form.started_at.id_for_label }}" name="{{ form.started_at.name }}" required="">
+                <label for="started_at">Начальное время брони: </label>
+                {% if used_reservation %}
+                <input type="date" class="form-control" id="started_at" name="started_at" required="" value="{{ used_reservation.started_at|date:"Y-m-d"}}">
+                {% else %}
+                <input type="date" class="form-control" id="started_at" name="started_at" required="">
+                {% endif %}
             </div>
             <div class="form-group">
-                {{ form.ended_at.errors }}
-                <label for="{{ form.ended_at.id_for_label }}">Конечное время брони: </label>
-                <input type="date" class="form-control" id="{{ form.ended_at.id_for_label }}" name="{{ form.ended_at.name }}" required="">
+                <label for="ended_at">Конечное время брони: </label>
+                {% if used_reservation %}
+                <input type="date" class="form-control" id="ended_at" name="ended_at" required="" value="{{ used_reservation.ended_at|date:"Y-m-d"}}">
+                {% else %}
+                <input type="date" class="form-control" id="ended_at" name="ended_at" required="">
+                {% endif %}
             </div>
             <input type="submit" class="btn btn-success" value="Заселить">
         </form>
