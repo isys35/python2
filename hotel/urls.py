@@ -6,6 +6,7 @@ from hotel import views
 app_name = "hotel"
 
 urlpatterns = [
+    path('put_rate/<int:rate>/<int:type_id>/', views.put_a_rating, name='put-rate'),
     path('room/check-in/<int:room_id>/<int:reservation_id>', views.chek_in, name='check-in'),
     path('room/check-in/<int:room_id>', views.chek_in, name='check-in'),
     path('room/delete/<int:pk>', login_required(views.RoomDeleteView.as_view()), name='delete'),

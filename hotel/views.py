@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import Q
+from django.db.models import Q, Avg, Count, Prefetch
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -11,12 +11,14 @@ from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from datetime import datetime
 
 from .forms import RoomForm, ReservationForm
-from .models import Room, Reservation, CheckIn
+from .models import Room, Reservation, CheckIn, TypeService, UserTypeService
 
 
 def main_page(requests: WSGIRequest) -> HttpResponse:
     rooms = Room.objects.all()
-    context = {'rooms': rooms}
+    type_services = TypeService.objects.prefetch_related('rated_type_service').all()
+    avg_types_rate = type_services.aggregate(avg_rate=Avg("avg_rate"))['avg_rate']
+    context = {'rooms': rooms, 'type_services': type_services, 'avg_types_rate': avg_types_rate}
     return render(requests, 'hotel/index.html', context=context)
 
 
@@ -116,3 +118,17 @@ def chek_in(request: WSGIRequest, room_id, reservation_id=None):
     if reservation_id:
         context['used_reservation'] = Reservation.objects.get(id=reservation_id)
     return render(request, "hotel/check_in_form.html", context)
+
+
+@login_required
+def put_a_rating(request: WSGIRequest, rate, type_id):
+    UserTypeService.objects.update_or_create(
+        user_id=request.user.id,
+        type_service_id=type_id,
+        defaults={"rate": rate}
+    )
+    ts = TypeService.objects.get(id=type_id)
+    ts.avg_rate = ts.rated_type_service.aggregate(rate=Avg("rate"))['rate']
+    ts.count_rate = ts.users.count()
+    ts.save(update_fields=['avg_rate', 'count_rate'])
+    return redirect("hotel:main")

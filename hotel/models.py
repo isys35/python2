@@ -59,9 +59,11 @@ class TypeService(models.Model):
         null=True,
         blank=True
     )
-    user = models.ManyToManyField(
+    count_rate = models.IntegerField(null=False, blank=False, default=0)
+    users = models.ManyToManyField(
         User,
         related_name="rated_services",
+        through="UserTypeService",
         blank=True
     )
 
@@ -76,12 +78,13 @@ class TypeService(models.Model):
 class UserTypeService(models.Model):
     class Meta:
         unique_together = ("user", "type_service")
+        verbose_name_plural = 'Оценки'
+        verbose_name = 'Оценка'
 
     user = models.ForeignKey(
         User,
         related_name="rated_type_service",
-        on_delete=models.SET_DEFAULT,
-        default=3
+        on_delete=models.CASCADE,
     )
     type_service = models.ForeignKey(
         TypeService,
