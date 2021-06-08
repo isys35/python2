@@ -1,0 +1,15 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+    <div class="container">
+        {% for check_in in chek_ins %}
+        <div class="check-in-info">
+            <h2><a href="{% url 'hotel:detail' pk=check_in.room_id  %}">Номер {{ check_in.room.number }}</a></h2>
+            <p>Живёт: {{ check_in.user.username }}</p>
+            <p>Заехал: {{ check_in.started_at|date:"Y-m-d" }}</p>
+            <p>Выезжает: {{ check_in.ended_at|date:"Y-m-d" }}</p>
+            <p>Последнее сообщение: </p>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}

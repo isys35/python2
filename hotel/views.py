@@ -1,3 +1,4 @@
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -12,6 +13,7 @@ from datetime import datetime
 
 from .forms import RoomForm, ReservationForm
 from .models import Room, Reservation, CheckIn, TypeService, UserTypeService
+from .utils import get_intersections
 
 
 def main_page(requests: WSGIRequest) -> HttpResponse:
@@ -77,14 +79,7 @@ def make_reservation(request: WSGIRequest, pk):
             reservation = reservation_form.save(commit=False)
             reservation.user = request.user
             reservation.room_id = pk
-            intersections_of_dates = Reservation.objects.filter(
-                Q(started_at__gte=reservation.started_at, ended_at__lte=reservation.ended_at) |
-                Q(started_at__lte=reservation.started_at, ended_at__gte=reservation.ended_at) |
-                Q(started_at__gte=reservation.started_at, started_at__lte=reservation.ended_at,
-                  ended_at__gte=reservation.ended_at) |
-                Q(ended_at__gte=reservation.started_at, ended_at__lte=reservation.ended_at,
-                  started_at__lte=reservation.ended_at)
-            ).filter(room_id=pk)
+            intersections_of_dates = get_intersections(reservation)
             if intersections_of_dates:
                 context = {'form': reservation_form, 'reservations': reservations, 'error_date': True}
                 return render(request, "hotel/reservation_form.html", context)
@@ -106,12 +101,16 @@ def chek_in(request: WSGIRequest, room_id, reservation_id=None):
         tenant = User.objects.get(username=tenant_username)
         started_at = datetime.strptime(request.POST['started_at'], "%Y-%m-%d")
         ended_at = datetime.strptime(request.POST['ended_at'], "%Y-%m-%d")
-        CheckIn.objects.create(
+        chek_in = CheckIn(
             user=tenant,
             started_at=started_at,
             ended_at=ended_at,
             room_id=room_id
         )
+        intersections_of_dates = get_intersections(chek_in)
+        if intersections_of_dates:
+            return redirect("hotel:check-in", room_id)
+        chek_in.save()
         return redirect('hotel:detail', room_id)
     reservations = Reservation.objects.filter(room_id=room_id)
     context = {'room': Room.objects.get(pk=room_id), 'reservations': reservations}
@@ -132,3 +131,10 @@ def put_a_rating(request: WSGIRequest, rate, type_id):
     ts.count_rate = ts.users.count()
     ts.save(update_fields=['avg_rate', 'count_rate'])
     return redirect("hotel:main")
+
+
+@staff_member_required
+def admin_info(request: WSGIRequest):
+    chek_ins = CheckIn.objects.select_related('room').select_related('user').all()
+    context = {'chek_ins': chek_ins}
+    return render(request, "hotel/admin-info.html", context=context)

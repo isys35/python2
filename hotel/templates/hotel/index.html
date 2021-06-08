@@ -24,11 +24,11 @@
             <div class="rate-title">
                 <span>{{ type_service }}</span>
             </div>
-            <a href="{% url 'hotel:put-rate' rate=1 type_id=type_service.id %}"><span class="emoji">😠</span></a>
-            <a href="{% url 'hotel:put-rate' rate=2 type_id=type_service.id %}"><span class="emoji">😦</span></a>
-            <a href="{% url 'hotel:put-rate' rate=3 type_id=type_service.id %}"><span class="emoji">😑</span></a>
-            <a href="{% url 'hotel:put-rate' rate=4 type_id=type_service.id %}"><span class="emoji">😀</span></a>
-            <a href="{% url 'hotel:put-rate' rate=5 type_id=type_service.id %}"><span class="emoji">😍</span></a>
+            <a href="{% url 'hotel:put-rate' rate=1 type_id=type_service.id %}"><span class="emoji">😠</span></a><span class="emoji-info">(0)</span>
+            <a href="{% url 'hotel:put-rate' rate=2 type_id=type_service.id %}"><span class="emoji">😦</span></a><span class="emoji-info">(0)</span>
+            <a href="{% url 'hotel:put-rate' rate=3 type_id=type_service.id %}"><span class="emoji">😑</span></a><span class="emoji-info">(0)</span>
+            <a href="{% url 'hotel:put-rate' rate=4 type_id=type_service.id %}"><span class="emoji">😀</span></a><span class="emoji-info">(0)</span>
+            <a href="{% url 'hotel:put-rate' rate=5 type_id=type_service.id %}"><span class="emoji">😍</span></a><span class="emoji-info">(0)</span>
             <div class="rate-avg">
                 <span>{{ type_service.avg_rate }}</span>
                 <span class="rate-avg-count">({{ type_service.count_rate }})</span>

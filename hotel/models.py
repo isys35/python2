@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Q
 
 
 class Room(models.Model):
@@ -30,6 +31,12 @@ class Room(models.Model):
         verbose_name = 'Номер'
 
 
+class Message(models.Model):
+    text = models.TextField(db_index=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+
 class Reservation(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE, verbose_name='Номер', related_name="booked")
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
@@ -49,6 +56,9 @@ class CheckIn(Reservation):
     class Meta:
         verbose_name_plural = 'Заселения'
         verbose_name = 'Заселение'
+
+    def __str__(self):
+        return "Жизнь в {} пользователем {}".format(self.room, self.user.username)
 
 
 class TypeService(models.Model):
@@ -91,4 +101,12 @@ class UserTypeService(models.Model):
         on_delete=models.CASCADE,
         related_name="rated_type_service"
     )
+    count_this_rate = models.IntegerField(default=0)
     rate = models.PositiveSmallIntegerField()
+
+    def update_count_this_rate(self):
+        self.count_this_rate = UserTypeService.objects.filter(rate=self.rate, type_service=self.type_service).count()
+
+    def save(self, *args, **kwargs):
+        self.update_count_this_rate()
+        super().save(*args, **kwargs)
