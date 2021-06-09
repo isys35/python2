@@ -140,6 +140,17 @@ def admin_info(request: WSGIRequest):
     sq = Subquery(Message.objects.filter(author_id=OuterRef('user_id'),
                                          pub_date__gte=today,
                                          pub_date__lt=tomorrow).values('text')[:1])
-    chek_ins = CheckIn.objects.select_related().annotate(last_message=sq).all()
+    sq2 = Subquery(Message.objects.filter(author_id=OuterRef('user_id'),
+                                          pub_date__gte=today,
+                                          pub_date__lt=tomorrow).values('pub_date')[:1])
+    chek_ins = CheckIn.objects.select_related().annotate(last_message=sq, last_message_date=sq2).all()
     context = {'chek_ins': chek_ins}
     return render(request, "hotel/admin-info.html", context=context)
+
+
+@staff_member_required
+def messages_history(request: WSGIRequest, user_id: int):
+    messages = Message.objects.filter(author_id=user_id).order_by('pub_date')
+    author = User.objects.get(id=user_id)
+    context = {'messages': messages, 'author': author}
+    return render(request, "hotel/messages-history.html", context=context)

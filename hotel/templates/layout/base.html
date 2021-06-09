@@ -55,21 +55,50 @@
         .last-message-head {
             white-space: nowrap;
             display: flex;
-            align-items: center;
+            margin-right: 10px;
         }
-        .last-message-text {
-            height: 30px;
+        .last-message-text-block {
+            width: 100%;
+        }
+        .last-message-text, .message-text {
+            min-height: 30px;
             background-color: #dbdbdb;
             width: 100%;
             text-align: justify;
             display: flex;
             align-items: center;
             border-radius: 5px;
+            justify-content: space-between
         }
-        .last-message-text span{
+        .last-message-text span, .message-text span{
             margin-left: 10px;
             font-style: italic;
         }
+
+        .last-message-time, .message-time{
+            font-size: 10px;
+            color: #505050;
+            margin-right: 10px;
+        }
+
+        .last-message-text-block{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .last-message-text-block a{
+            font-size: 10px;
+        }
+
+        .message-text {
+            margin-top: 15px;
+            margin-left: 15px;
+        }
+
+        .message-text span{
+            margin-left: 10px;
+        }
+
     </style>
 </head>
 <body>

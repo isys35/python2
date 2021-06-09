@@ -13,8 +13,12 @@
                     <div class="last-message-head">
                     <span>Последнее сообщение сегодня:</span>
                     </div>
-                    <div class="last-message-text">
-                        <span>{{ check_in.last_message }}</span>
+                    <div class="last-message-text-block">
+                        <div class="last-message-text">
+                            <span>{{ check_in.last_message }}</span>
+                            <span class="last-message-time">{{ check_in.last_message_date|date:"H:i:s" }}</span>
+                        </div>
+                        <a href="{% url 'hotel:messages-history' user_id=check_in.user_id %}">Посмотреть историю сообщений</a>
                     </div>
                 </div>
             {% endif %}
