@@ -3,13 +3,6 @@
 {% block content %}
     <div class="container">
         <h1>Сообщения пользователя {{ author.username }}</h1>
-        <div class="dialog">
-            {% for message in messages %}
-                <div class="message-text">
-                    <span>{{ message.text }}</span>
-                    <span class="message-time">{{ message.pub_date|date:"H:i:s" }}</span>
-                </div>
-            {% endfor %}
-        </div>
+        {% include "hotel/dialog-view.html" with messages=messages %}
     </div>
 {% endblock %}

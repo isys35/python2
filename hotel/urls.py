@@ -6,6 +6,7 @@ from hotel import views
 app_name = "hotel"
 
 urlpatterns = [
+    path('profile/', views.profile, name='profile'),
     path('messages-history/<int:user_id>', views.messages_history, name='messages-history'),
     path('admin-info/', views.admin_info, name='admin-info'),
     path('put_rate/<int:rate>/<int:type_id>/', views.put_a_rating, name='put-rate'),

@@ -112,7 +112,7 @@
     </div>
     <ul class="nav navbar-nav navbar-right">
       {% if user.is_authenticated %}
-        <li><a href="#"><span class="glyphicon glyphicon-user"></span> {{ user.username }}</a></li>
+        <li><a href="{% url 'hotel:profile' %}"><span class="glyphicon glyphicon-user"></span> {{ user.username }}</a></li>
         <li><a href="{% url 'hotel:logout' %}"><span class="glyphicon glyphicon-log-out"></span> Выйти</a></li>
       {% else %}
         <li><a href="#"><span class="glyphicon glyphicon-user"></span> Регистрация</a></li>

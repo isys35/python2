@@ -99,8 +99,8 @@ def chek_in(request: WSGIRequest, room_id, reservation_id=None):
     if request.method == 'POST':
         tenant_username = request.POST.get('username')
         tenant = User.objects.get(username=tenant_username)
-        started_at = datetime.strptime(request.POST['started_at'], "%Y-%m-%d")
-        ended_at = datetime.strptime(request.POST['ended_at'], "%Y-%m-%d")
+        started_at = datetime.datetime.strptime(request.POST['started_at'], "%Y-%m-%d")
+        ended_at = datetime.datetime.strptime(request.POST['ended_at'], "%Y-%m-%d")
         chek_in = CheckIn(
             user=tenant,
             started_at=started_at,
@@ -154,3 +154,14 @@ def messages_history(request: WSGIRequest, user_id: int):
     author = User.objects.get(id=user_id)
     context = {'messages': messages, 'author': author}
     return render(request, "hotel/messages-history.html", context=context)
+
+
+@login_required
+def profile(request: WSGIRequest):
+    if request.method == 'POST':
+        text = request.POST['text']
+        Message.objects.create(author=request.user, text=text)
+        return redirect('hotel:profile')
+    messages = Message.objects.filter(author_id=request.user.id).order_by('pub_date')
+    context = {'messages': messages}
+    return render(request, "hotel/profile.html", context=context)
