@@ -24,14 +24,14 @@
             <div class="rate-title">
                 <span>{{ type_service }}</span>
             </div>
-            <a class="rate-btn" id="typeservice_{{ type_service.id }}_1" href=""><span class="emoji">😠</span></a>
-            <a class="rate-btn" id="typeservice_{{ type_service.id }}_2" href=""><span class="emoji">😦</span></a>
-            <a class="rate-btn" id="typeservice_{{ type_service.id }}_3" href=""><span class="emoji">😑</span></a>
-            <a class="rate-btn" id="typeservice_{{ type_service.id }}_4" href=""><span class="emoji">😀</span></a>
-            <a class="rate-btn" id="typeservice_{{ type_service.id }}_5" href=""><span class="emoji">😍</span></a>
+            <a class="rate-btn" id="typeservice_{{ type_service.id }}_1" href="#"><span class="emoji">😠</span></a>
+            <a class="rate-btn" id="typeservice_{{ type_service.id }}_2" href="#"><span class="emoji">😦</span></a>
+            <a class="rate-btn" id="typeservice_{{ type_service.id }}_3" href="#"><span class="emoji">😑</span></a>
+            <a class="rate-btn" id="typeservice_{{ type_service.id }}_4" href="#"><span class="emoji">😀</span></a>
+            <a class="rate-btn" id="typeservice_{{ type_service.id }}_5" href="#"><span class="emoji">😍</span></a>
             <div class="rate-avg">
-                <span>{{ type_service.avg_rate }}</span>
-                <span class="rate-avg-count">({{ type_service.count_rate }})</span>
+                <span id="rate-avg_{{ type_service.id }}">{{ type_service.avg_rate }}</span>
+                <span id="rate-avg-count_{{ type_service.id }}" class="rate-avg-count">({{ type_service.count_rate }})</span>
             </div>
         </div>
         {% endfor %}
@@ -63,13 +63,14 @@
                let type_service_id = $(this).attr('id').split('_')[1];
                let rate = $(this).attr('id').split('_')[2];
                $.ajax({
-                   url: `put_rate/`,
+                   url: "put_rate/",
                    method: "POST",
                    data: {'csrfmiddlewaretoken': csrftoken, 'type_service_id': type_service_id,
                         'rate':rate
                    },
-                   success: function () {
-                        console.log("dasdasdasdasd");
+                   success: function (data) {
+                        $(`#rate-avg_${type_service_id}`).text(data['avg_rate']);
+                        $(`#rate-avg-count_${type_service_id}`).text(`(${data['count_rate']})`);
                    }
                });
             })
