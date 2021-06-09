@@ -1,0 +1,92 @@
+.rate a{
+        padding: 2px;
+        font-size: 24px;
+        text-decoration: none;
+    }
+.emoji {
+    display: inline-block;
+}
+.rate a:hover .emoji{
+    transform: scale(1.2);
+}
+.rate {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 450px;
+}
+.rate-title {
+    font-size: 10px;
+    width: 150px;
+}
+.rate-avg {
+    display: flex;
+    margin-left: 15px;
+    font-size: 22px;
+    color: #931b1b;
+}
+.rate-avg-count {
+    font-size: 12px;
+}
+.avg-avg-rate {
+    font-size: 30px;
+}
+.emoji-info {
+    font-size: 10px;
+}
+.check-in-info {
+    border: solid black;
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 5px;
+}
+.last-message {
+    display: flex;
+}
+.last-message-head {
+    white-space: nowrap;
+    display: flex;
+    margin-right: 10px;
+}
+.last-message-text-block {
+    width: 100%;
+}
+.last-message-text, .message-text {
+    min-height: 30px;
+    background-color: #dbdbdb;
+    width: 100%;
+    text-align: justify;
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+    justify-content: space-between
+}
+.last-message-text span, .message-text span{
+    margin-left: 10px;
+    font-style: italic;
+}
+
+.last-message-time, .message-time{
+    font-size: 10px;
+    color: #505050;
+    margin-right: 10px;
+}
+
+.last-message-text-block{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.last-message-text-block a{
+    font-size: 10px;
+}
+
+.message-text {
+    margin-top: 15px;
+    margin-left: 15px;
+}
+
+.message-text span{
+    margin-left: 10px;
+}

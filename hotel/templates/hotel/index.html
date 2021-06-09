@@ -24,23 +24,55 @@
             <div class="rate-title">
                 <span>{{ type_service }}</span>
             </div>
-            <a href="{% url 'hotel:put-rate' rate=1 type_id=type_service.id %}"><span class="emoji">😠</span></a><span class="emoji-info">(0)</span>
-            <a href="{% url 'hotel:put-rate' rate=2 type_id=type_service.id %}"><span class="emoji">😦</span></a><span class="emoji-info">(0)</span>
-            <a href="{% url 'hotel:put-rate' rate=3 type_id=type_service.id %}"><span class="emoji">😑</span></a><span class="emoji-info">(0)</span>
-            <a href="{% url 'hotel:put-rate' rate=4 type_id=type_service.id %}"><span class="emoji">😀</span></a><span class="emoji-info">(0)</span>
-            <a href="{% url 'hotel:put-rate' rate=5 type_id=type_service.id %}"><span class="emoji">😍</span></a><span class="emoji-info">(0)</span>
+            <a class="rate-btn" id="typeservice_{{ type_service.id }}_1" href=""><span class="emoji">😠</span></a>
+            <a class="rate-btn" id="typeservice_{{ type_service.id }}_2" href=""><span class="emoji">😦</span></a>
+            <a class="rate-btn" id="typeservice_{{ type_service.id }}_3" href=""><span class="emoji">😑</span></a>
+            <a class="rate-btn" id="typeservice_{{ type_service.id }}_4" href=""><span class="emoji">😀</span></a>
+            <a class="rate-btn" id="typeservice_{{ type_service.id }}_5" href=""><span class="emoji">😍</span></a>
             <div class="rate-avg">
                 <span>{{ type_service.avg_rate }}</span>
                 <span class="rate-avg-count">({{ type_service.count_rate }})</span>
             </div>
         </div>
-        {% if type_services.last == type_service  %}
-            <div class="rate">
-                <div class="avg-avg-rate">
-                    Средний рейтинг: {{ avg_types_rate|floatformat:2 }}
-                </div>
-            </div>
-        {% endif %}
         {% endfor %}
+        <div class="rate">
+            <div class="avg-avg-rate">
+                Средний рейтинг: {{ avg_types_rate|floatformat:2 }}
+            </div>
+        </div>
     </div>
+    <script>
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+        $(document).ready( function () {
+            $(".rate-btn").on('click', function () {
+               let type_service_id = $(this).attr('id').split('_')[1];
+               let rate = $(this).attr('id').split('_')[2];
+               $.ajax({
+                   url: `put_rate/`,
+                   method: "POST",
+                   data: {'csrfmiddlewaretoken': csrftoken, 'type_service_id': type_service_id,
+                        'rate':rate
+                   },
+                   success: function () {
+                        console.log("dasdasdasdasd");
+                   }
+               });
+            })
+        })
+    </script>
 {% endblock %}

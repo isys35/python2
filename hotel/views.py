@@ -4,15 +4,20 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import Q, Avg, Count, Prefetch, Subquery, OuterRef
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
+from django.views.decorators.http import require_http_methods
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
 import datetime
+from rest_framework import generics
+
+from rest_framework import viewsets
 
 from .forms import RoomForm, ReservationForm
 from .models import Room, Reservation, CheckIn, TypeService, UserTypeService, Message
+from .serializers import TypeServiceSerializer
 from .utils import get_intersections
 
 
@@ -120,7 +125,10 @@ def chek_in(request: WSGIRequest, room_id, reservation_id=None):
 
 
 @login_required
-def put_a_rating(request: WSGIRequest, rate, type_id):
+@require_http_methods(["POST"])
+def put_a_rating(request: WSGIRequest):
+    type_id = request.POST['type_service_id']
+    rate = request.POST['rate']
     UserTypeService.objects.update_or_create(
         user_id=request.user.id,
         type_service_id=type_id,
@@ -130,7 +138,8 @@ def put_a_rating(request: WSGIRequest, rate, type_id):
     ts.avg_rate = ts.rated_type_service.aggregate(rate=Avg("rate"))['rate']
     ts.count_rate = ts.users.count()
     ts.save(update_fields=['avg_rate', 'count_rate'])
-    return redirect("hotel:main")
+    serializer = TypeServiceSerializer(ts)
+    return JsonResponse(serializer.data, safe=False)
 
 
 @staff_member_required
@@ -165,3 +174,9 @@ def profile(request: WSGIRequest):
     messages = Message.objects.filter(author_id=request.user.id).order_by('pub_date')
     context = {'messages': messages}
     return render(request, "hotel/profile.html", context=context)
+
+
+class TypeServiceListAPI(generics.ListAPIView):
+    queryset = TypeService.objects.all()
+    serializer_class = TypeServiceSerializer
+
