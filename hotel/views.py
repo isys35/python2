@@ -3,16 +3,16 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import Q, Avg, Count, Prefetch
+from django.db.models import Q, Avg, Count, Prefetch, Subquery, OuterRef
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
-from datetime import datetime
+import datetime
 
 from .forms import RoomForm, ReservationForm
-from .models import Room, Reservation, CheckIn, TypeService, UserTypeService
+from .models import Room, Reservation, CheckIn, TypeService, UserTypeService, Message
 from .utils import get_intersections
 
 
@@ -135,6 +135,11 @@ def put_a_rating(request: WSGIRequest, rate, type_id):
 
 @staff_member_required
 def admin_info(request: WSGIRequest):
-    chek_ins = CheckIn.objects.select_related('room').select_related('user').all()
+    today = datetime.date.today()
+    tomorrow = today + datetime.timedelta(days=1)
+    sq = Subquery(Message.objects.filter(author_id=OuterRef('user_id'),
+                                         pub_date__gte=today,
+                                         pub_date__lt=tomorrow).values('text')[:1])
+    chek_ins = CheckIn.objects.select_related().annotate(last_message=sq).all()
     context = {'chek_ins': chek_ins}
     return render(request, "hotel/admin-info.html", context=context)

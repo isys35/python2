@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import Q
 
 
 class Room(models.Model):
@@ -33,8 +32,13 @@ class Room(models.Model):
 
 class Message(models.Model):
     text = models.TextField(db_index=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
-    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь', related_name='messages')
+    pub_date = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        verbose_name_plural = 'Сообщения'
+        verbose_name = 'Сообщение'
+        ordering = ['-pub_date']
 
 
 class Reservation(models.Model):

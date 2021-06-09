@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Room, Reservation, CheckIn, TypeService, UserTypeService
+from .models import Room, Reservation, CheckIn, \
+    TypeService, UserTypeService, Message
 
 
 class TypeServiceAdmin(admin.ModelAdmin):
@@ -12,3 +13,4 @@ admin.site.register(Reservation)
 admin.site.register(CheckIn)
 admin.site.register(TypeService, TypeServiceAdmin)
 admin.site.register(UserTypeService)
+admin.site.register(Message)

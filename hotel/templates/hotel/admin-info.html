@@ -8,7 +8,16 @@
             <p>Живёт: {{ check_in.user.username }}</p>
             <p>Заехал: {{ check_in.started_at|date:"Y-m-d" }}</p>
             <p>Выезжает: {{ check_in.ended_at|date:"Y-m-d" }}</p>
-            <p>Последнее сообщение: </p>
+            {% if check_in.last_message %}
+                <div class="last-message">
+                    <div class="last-message-head">
+                    <span>Последнее сообщение сегодня:</span>
+                    </div>
+                    <div class="last-message-text">
+                        <span>{{ check_in.last_message }}</span>
+                    </div>
+                </div>
+            {% endif %}
         </div>
         {% endfor %}
     </div>
