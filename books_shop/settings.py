@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'sales_manager',
     'hotel',
     'debug_toolbar',
+    'hotel_api',
     'rest_framework'
 ]
 
