@@ -5,5 +5,8 @@ from hotel_api import views
 app_name = "hotel-api"
 
 urlpatterns = [
-    path('', views.hello_api)
+    path('rooms/', views.RoomAPIList.as_view()),
+    path('rooms/<int:pk>', views.RoomAPI.as_view()),
+    path('services/', views.TypeServiceAPIList.as_view()),
+    path('put_rate_service/', views.MarkTypeService.as_view())
 ]

@@ -11,11 +11,9 @@ from django.views import View
 from django.views.decorators.http import require_http_methods
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
 import datetime
-from rest_framework import generics
 
 from .forms import RoomForm, ReservationForm
 from .models import Room, Reservation, CheckIn, TypeService, UserTypeService, Message
-from .serializers import TypeServiceSerializer
 from .utils import get_intersections
 
 
@@ -185,8 +183,4 @@ def profile(request: WSGIRequest):
     context = {'messages': messages}
     return render(request, "hotel/profile.html", context=context)
 
-
-class TypeServiceListAPI(generics.ListAPIView):
-    queryset = TypeService.objects.all()
-    serializer_class = TypeServiceSerializer
 
