@@ -90,3 +90,22 @@
 .message-text span{
     margin-left: 10px;
 }
+
+.room-reservation-list {
+    margin-top: 20px;
+
+}
+.room-reservation-list-head {
+    font-size: 22px;
+    font-style: italic;
+}
+
+.room-reservation-item {
+    margin-left: 5px;
+    margin-top: 15px;
+}
+
+.room-reservation-item span{
+    background-color: #ec8d8d;
+}
+

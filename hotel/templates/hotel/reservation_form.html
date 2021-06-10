@@ -24,12 +24,7 @@
             <input type="submit" class="btn btn-success" value="Забронировать">
         </form>
         {% if reservations %}
-        <p>Забронированные даты:</p>
-        <ul>
-            {% for reservation in reservations %}
-                <li>C {{ reservation.started_at|date:'d.m.Y' }} по {{ reservation.ended_at|date:'d.m.Y' }}</li>
-            {% endfor %}
-        </ul>
+            {% include "hotel/reservations-view.html" with reservations=reservations %}
         {% endif %}
     </div>
 {% endblock %}

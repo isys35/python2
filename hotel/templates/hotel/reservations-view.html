@@ -1,0 +1,8 @@
+<div class="room-reservation-list">
+    <div class="room-reservation-list-head"><span>Уже забронировано:</span></div>
+        {% for reservation in reservations %}
+            <div class="room-reservation-item">
+                <span>C {{ reservation.started_at|date:"d.m.Y H:i:s" }} по {{ reservation.ended_at|date:"d.m.Y H:i:s" }}</span>
+            </div>
+        {% endfor %}
+</div>

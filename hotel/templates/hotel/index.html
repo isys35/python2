@@ -73,6 +73,13 @@
                         $(`#rate-avg-count_${type_service_id}`).text(`(${data['count_rate']})`);
                    }
                });
+               $.ajax({
+                   url: "avg_rate/",
+                   method: "GET",
+                   success: function (data) {
+                        $(".avg-avg-rate").text(`Средний рейтинг: ${data['avg_rate']}`;
+                   }
+               });
             })
         })
     </script>

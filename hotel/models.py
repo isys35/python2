@@ -105,12 +105,4 @@ class UserTypeService(models.Model):
         on_delete=models.CASCADE,
         related_name="rated_type_service"
     )
-    count_this_rate = models.IntegerField(default=0)
     rate = models.PositiveSmallIntegerField()
-
-    def update_count_this_rate(self):
-        self.count_this_rate = UserTypeService.objects.filter(rate=self.rate, type_service=self.type_service).count()
-
-    def save(self, *args, **kwargs):
-        self.update_count_this_rate()
-        super().save(*args, **kwargs)

@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import Q, Avg, Count, Prefetch, Subquery, OuterRef
+from django.db.models import Avg, Subquery, OuterRef, Prefetch
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -12,8 +12,6 @@ from django.views.decorators.http import require_http_methods
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
 import datetime
 from rest_framework import generics
-
-from rest_framework import viewsets
 
 from .forms import RoomForm, ReservationForm
 from .models import Room, Reservation, CheckIn, TypeService, UserTypeService, Message
@@ -30,8 +28,12 @@ def main_page(requests: WSGIRequest) -> HttpResponse:
 
 
 def room_detail(request: WSGIRequest, pk: int) -> HttpResponse:
-    room = Room.objects.get(pk=pk)
-    context = {'room': room}
+    today = datetime.date.today()
+    queryset = Reservation.objects.exclude(ended_at__lte=today)
+    pr = Prefetch("booked", queryset=queryset)
+    room = Room.objects.prefetch_related(pr).get(pk=pk)
+    check_in_check = CheckIn.objects.filter(room_id=pk, ended_at__gte=today, started_at__lte=today).exists()
+    context = {'room': room, 'check_in_check': check_in_check}
     return render(request, 'hotel/room.html', context=context)
 
 
@@ -101,6 +103,7 @@ def make_reservation(request: WSGIRequest, pk):
 
 @login_required
 def chek_in(request: WSGIRequest, room_id, reservation_id=None):
+    today = datetime.datetime.now()
     if request.method == 'POST':
         tenant_username = request.POST.get('username')
         tenant = User.objects.get(username=tenant_username)
@@ -117,8 +120,8 @@ def chek_in(request: WSGIRequest, room_id, reservation_id=None):
             return redirect("hotel:check-in", room_id)
         chek_in.save()
         return redirect('hotel:detail', room_id)
-    reservations = Reservation.objects.filter(room_id=room_id)
-    context = {'room': Room.objects.get(pk=room_id), 'reservations': reservations}
+    reservations = Reservation.objects.select_related("user").select_related("room").filter(room_id=room_id)
+    context = {'room': Room.objects.get(pk=room_id), 'reservations': reservations, 'today': today}
     if reservation_id:
         context['used_reservation'] = Reservation.objects.get(id=reservation_id)
     return render(request, "hotel/check_in_form.html", context)
@@ -140,6 +143,13 @@ def put_a_rating(request: WSGIRequest):
     ts.save(update_fields=['avg_rate', 'count_rate'])
     serializer = TypeServiceSerializer(ts)
     return JsonResponse(serializer.data, safe=False)
+
+
+@login_required
+def avg_rate(request: WSGIRequest):
+    type_services = TypeService.objects.all()
+    avg_types_rate = type_services.aggregate(avg_rate=Avg("avg_rate"))['avg_rate']
+    return JsonResponse({'avg_rate': avg_types_rate}, safe=False)
 
 
 @staff_member_required

@@ -2,6 +2,9 @@
 {% block content %}
     <div class="container">
         <h1>Номер {{ room.number }}</h1>
+        {% if check_in_check %}
+            <h2>В данный момент комната занята</h2>
+        {% endif %}
         <ul>
             <li>Кол-во комнат: {{ room.number_of_rooms }}</li>
             <li>Этаж: {{ room.floor }}</li>
@@ -9,12 +12,17 @@
             <li>Описание: {{ room.description }}</li>
             {% if user.is_authenticated %}
             <li>
-                <a href="{% url "hotel:edit" pk=room.pk %}">Изменить</a>
-                <a href="{% url "hotel:delete" pk=room.pk %}">Удалить</a>
+                {% if user.is_staff %}
+                    <a href="{% url "hotel:edit" pk=room.pk %}">Изменить</a>
+                    <a href="{% url "hotel:delete" pk=room.pk %}">Удалить</a>
+                    {% if not check_in_check %}
+                        <a href="{% url "hotel:check-in" room_id=room.id %}">Заселить</a>
+                    {% endif %}
+                {% endif %}
                 <a href="{% url "hotel:reservation" pk=room.pk %}">Забронировать</a>
-                <a href="{% url "hotel:check-in" room_id=room.id %}">Заселить</a>
             </li>
             {% endif %}
+            {% include "hotel/reservations-view.html" with reservations=room.booked.all %}
         </ul>
     </div>
 {% endblock %}

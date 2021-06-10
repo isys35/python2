@@ -6,11 +6,11 @@ from hotel import views
 app_name = "hotel"
 
 urlpatterns = [
-    path('api/type-service/', views.TypeServiceListAPI.as_view()),
+    path('avg_rate/', views.avg_rate),
     path('profile/', views.profile, name='profile'),
     path('messages-history/<int:user_id>', views.messages_history, name='messages-history'),
     path('admin-info/', views.admin_info, name='admin-info'),
-    path('put_rate/', views.put_a_rating, name='put-rate'),
+    path('put_rate/', views.put_a_rating),
     path('room/check-in/<int:room_id>/<int:reservation_id>', views.chek_in, name='check-in'),
     path('room/check-in/<int:room_id>', views.chek_in, name='check-in'),
     path('room/delete/<int:pk>', login_required(views.RoomDeleteView.as_view()), name='delete'),
