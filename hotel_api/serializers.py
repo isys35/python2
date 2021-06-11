@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.fields import CharField
 
-from hotel.models import Room, TypeService, UserTypeService, Reservation
+from hotel.models import Room, TypeService, UserTypeService, Reservation, CheckIn
 
 
 class TypeServiceSerializer(serializers.ModelSerializer):
@@ -24,10 +24,26 @@ class ReservationSerializer(serializers.ModelSerializer):
         fields = ['user', 'description', 'started_at', 'ended_at']
 
 
+class CreateReservationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Reservation
+        fields = ['description', 'started_at', 'ended_at']
+
+
+class CheckInSerializer(serializers.ModelSerializer):
+    user = CharField(source="user.username")
+
+    class Meta:
+        model = CheckIn
+        fields = ['user', 'started_at', 'ended_at']
+
+
 class RoomSerializer(serializers.ModelSerializer):
     booked = ReservationSerializer(many=True, read_only=True)
+    check_ins = CheckInSerializer(many=True, read_only=True)
 
     class Meta:
         model = Room
         fields = ['id', 'number', 'floor', 'number_of_rooms',
-                  'description', 'booked']
+                  'description', 'booked', 'check_ins']
