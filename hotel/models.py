@@ -18,9 +18,6 @@ class Room(models.Model):
     number_of_rooms = models.PositiveIntegerField(verbose_name='Кол-во комнат', choices=ROOMS_COUNT, db_index=True)
     description = models.TextField(null=True, blank=True, verbose_name='Описание')
     room_class = models.CharField(max_length=10, choices=ROOM_CLASS, db_index=True, verbose_name='Класс номера')
-    user = models.ManyToManyField(User,
-                                  through="Reservation",
-                                  related_name="room")
 
     def __str__(self):
         return "Номер №{}".format(self.number)
@@ -56,7 +53,12 @@ class Reservation(models.Model):
         return "Бронь комнаты {} пользователем {}".format(self.room, self.user.username)
 
 
-class CheckIn(Reservation):
+class CheckIn(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, verbose_name='Номер', related_name="check_ins")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    started_at = models.DateTimeField(blank=True, null=True)
+    ended_at = models.DateTimeField(blank=True, null=True)
+
     class Meta:
         verbose_name_plural = 'Заселения'
         verbose_name = 'Заселение'
