@@ -39,6 +39,13 @@ class CheckInSerializer(serializers.ModelSerializer):
         fields = ['user', 'started_at', 'ended_at']
 
 
+class CreateCheckInSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CheckIn
+        fields = ['started_at', 'ended_at']
+
+
 class RoomSerializer(serializers.ModelSerializer):
     booked = ReservationSerializer(many=True, read_only=True)
     check_ins = CheckInSerializer(many=True, read_only=True)
