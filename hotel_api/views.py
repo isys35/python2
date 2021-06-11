@@ -1,3 +1,4 @@
+from django.db.models import Avg
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -40,9 +41,17 @@ class MarkTypeService(CreateAPIView):
     authentication_classes = [BasicAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+    def post(self, request, type_id):
+        update_or_create = UserTypeService.objects.update_or_create(
+            user_id=request.user.id,
+            type_service_id=type_id,
+            defaults={"rate": request.data['rate']}
+        )
+        ts = TypeService.objects.get(id=type_id)
+        ts.avg_rate = ts.rated_type_service.aggregate(rate=Avg("rate"))['rate']
+        ts.count_rate = ts.users.count()
+        ts.save(update_fields=['avg_rate', 'count_rate'])
+        serializer = self.serializer_class(update_or_create[0])
+        if update_or_create[1]:
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=status.HTTP_200_OK)

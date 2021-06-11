@@ -19,4 +19,4 @@ class TypeServiceSerializer(serializers.ModelSerializer):
 class UserTypeServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserTypeService
-        fields = ['user', 'type_service', 'rate']
+        fields = ['rate']
