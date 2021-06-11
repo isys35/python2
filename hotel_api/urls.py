@@ -11,4 +11,5 @@ urlpatterns = [
     path('put_rate_service/<int:type_id>', views.MarkTypeServiceAPI.as_view()),
     path('create_reservation/<int:room_id>', views.CreateReservationAPI.as_view()),
     path('create_checkin/<int:room_id>/', views.CreateCheckInAPI.as_view()),
+    path('avg_rate/', views.AvgRateAPI.as_view())
 ]
