@@ -70,8 +70,8 @@ class CheckIn(models.Model):
                              related_name="check_ins")
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                              verbose_name='Пользователь')
-    started_at = models.DateTimeField(blank=True, null=True)
-    ended_at = models.DateTimeField(blank=True, null=True)
+    started_at = models.DateTimeField()
+    ended_at = models.DateTimeField()
 
     class Meta:
         verbose_name_plural = 'Заселения'

@@ -1,5 +1,8 @@
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import Q
 from rest_framework import serializers
 from rest_framework.fields import CharField
+from .utils import validate_intersections
 
 from hotel.models import Room, TypeService, UserTypeService, Reservation, CheckIn
 
@@ -10,10 +13,9 @@ class TypeServiceSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'avg_rate', 'count_rate']
 
 
-class UserTypeServiceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserTypeService
-        fields = ['rate']
+class RateTypeServiceSerializer(serializers.Serializer):
+    rate = serializers.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
+    type_service_id = serializers.IntegerField()
 
 
 class ReservationSerializer(serializers.ModelSerializer):
@@ -25,10 +27,12 @@ class ReservationSerializer(serializers.ModelSerializer):
 
 
 class CreateReservationSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Reservation
-        fields = ['description', 'started_at', 'ended_at']
+        fields = ["room", 'description', 'started_at', 'ended_at']
+
+    def validate(self, data):
+        return validate_intersections(Reservation, data)
 
 
 class CheckInSerializer(serializers.ModelSerializer):
@@ -40,10 +44,12 @@ class CheckInSerializer(serializers.ModelSerializer):
 
 
 class CreateCheckInSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = CheckIn
-        fields = ['started_at', 'ended_at']
+        fields = ['user', 'room', 'started_at', 'ended_at']
+
+    def validate(self, data):
+        return validate_intersections(CheckIn, data)
 
 
 class RoomSerializer(serializers.ModelSerializer):

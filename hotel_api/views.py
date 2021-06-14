@@ -1,16 +1,18 @@
 from django.db.models import Avg
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from hotel.models import Room, TypeService, UserTypeService, Reservation, CheckIn
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, CreateAPIView, \
-    UpdateAPIView
+    UpdateAPIView, get_object_or_404
 from rest_framework.permissions import IsAdminUser, BasePermission, SAFE_METHODS, IsAuthenticated
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 
 from hotel.utils import get_intersections
-from hotel_api.serializers import RoomSerializer, TypeServiceSerializer, UserTypeServiceSerializer, \
-    ReservationSerializer, CreateReservationSerializer, CreateCheckInSerializer, CheckInSerializer
+from hotel_api.serializers import RoomSerializer, TypeServiceSerializer, \
+    ReservationSerializer, CreateReservationSerializer, CreateCheckInSerializer, CheckInSerializer, \
+    RateTypeServiceSerializer
 
 
 class ReadOnly(BasePermission):
@@ -37,26 +39,27 @@ class TypeServiceAPIList(ListAPIView):
     serializer_class = TypeServiceSerializer
 
 
-class MarkTypeServiceAPI(CreateAPIView):
-    queryset = UserTypeService.objects
-    serializer_class = UserTypeServiceSerializer
+class PutRateTypeServiceAPI(APIView):
+    serializer_class = RateTypeServiceSerializer
     authentication_classes = [BasicAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, type_id):
-        update_or_create = UserTypeService.objects.update_or_create(
+    def put(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        type_service = get_object_or_404(TypeService, id=serializer.data['type_service_id'])
+        UserTypeService.objects.update_or_create(
             user_id=request.user.id,
-            type_service_id=type_id,
-            defaults={"rate": request.data['rate']}
+            type_service_id=type_service.id,
+            defaults={"rate": serializer.data['rate']}
         )
-        ts = TypeService.objects.get(id=type_id)
-        ts.avg_rate = ts.rated_type_service.aggregate(rate=Avg("rate"))['rate']
-        ts.count_rate = ts.users.count()
-        ts.save(update_fields=['avg_rate', 'count_rate'])
-        serializer = self.serializer_class(update_or_create[0])
-        if update_or_create[1]:
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        type_service.avg_rate = type_service.rated_type_service.aggregate(rate=Avg("rate"))['rate']
+        type_service.count_rate = type_service.users.count()
+        type_service.save(update_fields=['avg_rate', 'count_rate'])
+        return Response({"title": type_service.title,
+                         "count_rate": type_service.count_rate,
+                         "avg_rate": type_service.avg_rate},
+                        status=status.HTTP_201_CREATED)
 
 
 class CreateReservationAPI(CreateAPIView):
@@ -65,33 +68,30 @@ class CreateReservationAPI(CreateAPIView):
     authentication_classes = [BasicAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, room_id):
-        create_serializer = self.serializer_class(data=request.data)
-        if create_serializer.is_valid():
-            reservation = Reservation(user=request.user, room_id=room_id, **create_serializer.data)
-            intersections_of_dates = get_intersections(reservation)
-            if intersections_of_dates:
-                return Response({'error': 'Дата уже занята'}, status=status.HTTP_400_BAD_REQUEST)
-            reservation.save()
-            serializer = ReservationSerializer(reservation)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(create_serializer.data, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        room = get_object_or_404(Room, id=serializer.data['room'])
+        serializer.is_valid(raise_exception=True)
+        self.queryset.create(user=request.user,
+                             room_id=room.id,
+                             description=serializer.data['description'],
+                             started_at=serializer.data['started_at'],
+                             ended_at=serializer.data['ended_at'])
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class CreateCheckInAPI(CreateAPIView):
-    queryset = Reservation.objects
+    queryset = CheckIn.objects
     serializer_class = CreateCheckInSerializer
     authentication_classes = [BasicAuthentication, SessionAuthentication]
     permission_classes = [IsAdminUser]
 
-    def post(self, request, room_id):
-        create_serializer = self.serializer_class(data=request.data)
-        if create_serializer.is_valid():
-            check_in = CheckIn(user=request.user, room_id=room_id, **create_serializer.data)
-            intersections_of_dates = get_intersections(check_in)
-            if intersections_of_dates:
-                return Response({'error': 'Дата уже занята'}, status=status.HTTP_400_BAD_REQUEST)
-            check_in.save()
-            serializer = CheckInSerializer(check_in)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(create_serializer.data, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        room = get_object_or_404(Room, id=serializer.data['room'])
+        serializer.is_valid(raise_exception=True)
+        self.queryset.create(user=request.user,
+                             room_id=room.id,
+                             started_at=serializer.data['started_at'],
+                             ended_at=serializer.data['ended_at'])
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
