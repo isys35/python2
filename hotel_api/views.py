@@ -5,14 +5,13 @@ from rest_framework.views import APIView
 
 from hotel.models import Room, TypeService, UserTypeService, Reservation, CheckIn
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, CreateAPIView, \
-    UpdateAPIView, get_object_or_404
+    get_object_or_404
 from rest_framework.permissions import IsAdminUser, BasePermission, SAFE_METHODS, IsAuthenticated
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 
-from hotel.utils import get_intersections
 from hotel_api.serializers import RoomSerializer, TypeServiceSerializer, \
-    ReservationSerializer, CreateReservationSerializer, CreateCheckInSerializer, CheckInSerializer, \
-    RateTypeServiceSerializer
+    CreateReservationSerializer, CreateCheckInSerializer, \
+    RateTypeServiceSerializer, ReservationSerializer, CheckInSerializer
 
 
 class ReadOnly(BasePermission):
@@ -95,3 +94,43 @@ class CreateCheckInAPI(CreateAPIView):
                              started_at=serializer.data['started_at'],
                              ended_at=serializer.data['ended_at'])
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ReservationAPIList(ListAPIView):
+    queryset = Reservation.objects
+    serializer_class = ReservationSerializer
+
+
+class CheckInAPIList(ListAPIView):
+    queryset = CheckIn.objects
+    serializer_class = CheckInSerializer
+
+
+class ReservationAPI(RetrieveUpdateDestroyAPIView):
+    queryset = Reservation.objects
+    serializer_class = ReservationSerializer
+    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    permission_classes = [IsAdminUser | ReadOnly]
+
+
+class CheckInAPI(RetrieveUpdateDestroyAPIView):
+    queryset = CheckIn.objects
+    serializer_class = CheckInSerializer
+    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    permission_classes = [IsAdminUser | ReadOnly]
+
+
+class RoomReservationsAPIList(ListAPIView):
+    queryset = Reservation.objects
+    serializer_class = ReservationSerializer
+
+    def list(self, request, room_id, **kwargs):
+        room = get_object_or_404(Room, id=room_id)
+        queryset = self.queryset.filter(room=room)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class RoomCheckInAPIList(RoomReservationsAPIList):
+    queryset = CheckIn.objects
+    serializer_class = CheckInSerializer

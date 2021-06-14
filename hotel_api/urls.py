@@ -11,5 +11,10 @@ urlpatterns = [
     path('put_rate_service/', views.PutRateTypeServiceAPI.as_view()),
     path('create_reservation/', views.CreateReservationAPI.as_view()),
     path('create_checkin/', views.CreateCheckInAPI.as_view()),
-    # path('avg_rate/', views.AvgRateAPI.as_view())
+    path('reservations/', views.ReservationAPIList.as_view()),
+    path('checkins/', views.CheckInAPIList.as_view()),
+    path('reservations/<int:pk>', views.ReservationAPI.as_view()),
+    path('checkins/<int:pk>', views.CheckInAPI.as_view()),
+    path('room_reservations/<int:room_id>', views.RoomReservationsAPIList.as_view()),
+    path('room_checkins/<int:room_id>', views.RoomCheckInAPIList.as_view())
 ]

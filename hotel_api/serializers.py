@@ -23,7 +23,7 @@ class ReservationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Reservation
-        fields = ['user', 'description', 'started_at', 'ended_at']
+        fields = ['user', 'room', 'description', 'started_at', 'ended_at']
 
 
 class CreateReservationSerializer(serializers.ModelSerializer):
@@ -40,7 +40,7 @@ class CheckInSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CheckIn
-        fields = ['user', 'started_at', 'ended_at']
+        fields = ['user', 'room', 'started_at', 'ended_at']
 
 
 class CreateCheckInSerializer(serializers.ModelSerializer):
