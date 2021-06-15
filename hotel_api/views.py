@@ -1,9 +1,10 @@
+from django.contrib.auth.models import User
 from django.db.models import Avg
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from hotel.models import Room, TypeService, UserTypeService, Reservation, CheckIn
+from hotel.models import Room, TypeService, UserTypeService, Reservation, CheckIn, Message
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, CreateAPIView, \
     get_object_or_404
 from rest_framework.permissions import IsAdminUser, BasePermission, SAFE_METHODS, IsAuthenticated
@@ -11,7 +12,7 @@ from rest_framework.authentication import BasicAuthentication, SessionAuthentica
 
 from hotel_api.serializers import RoomSerializer, TypeServiceSerializer, \
     CreateReservationSerializer, CreateCheckInSerializer, \
-    RateTypeServiceSerializer, ReservationSerializer, CheckInSerializer
+    RateTypeServiceSerializer, ReservationSerializer, CheckInSerializer, CreateMessageSerializer, MessageSerializer
 
 
 class ReadOnly(BasePermission):
@@ -134,3 +135,26 @@ class RoomReservationsAPIList(ListAPIView):
 class RoomCheckInAPIList(RoomReservationsAPIList):
     queryset = CheckIn.objects
     serializer_class = CheckInSerializer
+
+
+class SendMessageAPI(APIView):
+    serializer_class = CreateMessageSerializer
+    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        Message.objects.create(author=request.user, text=serializer.data['text'])
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class MessagesAPIList(ListAPIView):
+    queryset = Message.objects
+    serializer_class = MessageSerializer
+
+    def list(self, request, user_id, **kwargs):
+        user = get_object_or_404(User, id=user_id)
+        queryset = self.queryset.filter(author=user)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

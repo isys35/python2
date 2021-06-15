@@ -1,10 +1,9 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db.models import Q
 from rest_framework import serializers
 from rest_framework.fields import CharField
 from .utils import validate_intersections
 
-from hotel.models import Room, TypeService, UserTypeService, Reservation, CheckIn
+from hotel.models import Room, TypeService, Reservation, CheckIn, Message
 
 
 class TypeServiceSerializer(serializers.ModelSerializer):
@@ -60,3 +59,13 @@ class RoomSerializer(serializers.ModelSerializer):
         model = Room
         fields = ['id', 'number', 'floor', 'number_of_rooms',
                   'description', 'booked', 'check_ins']
+
+
+class CreateMessageSerializer(serializers.Serializer):
+    text = serializers.CharField()
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ['text', 'pub_date']

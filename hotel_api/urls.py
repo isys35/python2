@@ -16,5 +16,7 @@ urlpatterns = [
     path('reservations/<int:pk>', views.ReservationAPI.as_view()),
     path('checkins/<int:pk>', views.CheckInAPI.as_view()),
     path('room_reservations/<int:room_id>', views.RoomReservationsAPIList.as_view()),
-    path('room_checkins/<int:room_id>', views.RoomCheckInAPIList.as_view())
+    path('room_checkins/<int:room_id>', views.RoomCheckInAPIList.as_view()),
+    path('send_message/', views.SendMessageAPI.as_view()),
+    path('messages/<int:user_id>', views.MessagesAPIList.as_view())
 ]
