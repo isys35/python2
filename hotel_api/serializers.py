@@ -58,7 +58,7 @@ class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
         fields = ['id', 'number', 'floor', 'number_of_rooms',
-                  'description', 'booked', 'check_ins']
+                  'description', 'room_class', 'booked', 'check_ins']
 
 
 class CreateMessageSerializer(serializers.Serializer):
