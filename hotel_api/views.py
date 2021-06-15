@@ -70,8 +70,8 @@ class CreateReservationAPI(CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
-        room = get_object_or_404(Room, id=serializer.data['room'])
         serializer.is_valid(raise_exception=True)
+        room = get_object_or_404(Room, id=serializer.data['room'])
         self.queryset.create(user=request.user,
                              room_id=room.id,
                              description=serializer.data['description'],
@@ -88,8 +88,8 @@ class CreateCheckInAPI(CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
-        room = get_object_or_404(Room, id=serializer.data['room'])
         serializer.is_valid(raise_exception=True)
+        room = get_object_or_404(Room, id=serializer.data['room'])
         self.queryset.create(user=request.user,
                              room_id=room.id,
                              started_at=serializer.data['started_at'],
@@ -152,6 +152,7 @@ class SendMessageAPI(APIView):
 class MessagesAPIList(ListAPIView):
     queryset = Message.objects
     serializer_class = MessageSerializer
+    permission_classes = [IsAdminUser]
 
     def list(self, request, user_id, **kwargs):
         user = get_object_or_404(User, id=user_id)

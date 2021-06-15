@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'sales_manager',
     'hotel',
     'debug_toolbar',
     'hotel_api',
@@ -119,7 +118,7 @@ USE_I18N = True
 
 USE_L10N = False
 
-USE_TZ = True
+USE_TZ = False
 
 INTERNAL_IPS = [
     '127.0.0.1',

@@ -1,6 +1,5 @@
 from django.db.models import Q
-
-from hotel_api import serializers
+from rest_framework.exceptions import ValidationError
 
 
 def validate_intersections(model, data):
@@ -13,5 +12,5 @@ def validate_intersections(model, data):
           started_at__lte=data['ended_at'])
     ).filter(room_id=data['room']).exists()
     if intersections:
-        raise serializers.ValidationError("Данная дата уже зарезервирована")
+        raise ValidationError("Данная дата уже зарезервирована")
     return data

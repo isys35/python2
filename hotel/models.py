@@ -9,6 +9,7 @@ class Room(models.Model):
         ('VIP', 'VIP'),
     ]
     ROOMS_COUNT = [
+        (1, 1),
         (2, 2),
         (3, 3),
         (4, 4),
