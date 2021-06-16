@@ -12,6 +12,12 @@ class TypeServiceSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'avg_rate', 'count_rate']
 
 
+class AvgAllServices(serializers.Serializer):
+    avg_rate = serializers.DecimalField(max_digits=4,
+                                        decimal_places=2,
+                                        validators=[MinValueValidator(0), MaxValueValidator(5)])
+
+
 class RateTypeServiceSerializer(serializers.Serializer):
     rate = serializers.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
     type_service_id = serializers.IntegerField()

@@ -12,7 +12,8 @@ from rest_framework.authentication import BasicAuthentication, SessionAuthentica
 
 from hotel_api.serializers import RoomSerializer, TypeServiceSerializer, \
     CreateReservationSerializer, CreateCheckInSerializer, \
-    RateTypeServiceSerializer, ReservationSerializer, CheckInSerializer, CreateMessageSerializer, MessageSerializer
+    RateTypeServiceSerializer, ReservationSerializer, CheckInSerializer, CreateMessageSerializer, MessageSerializer, \
+    AvgAllServices
 
 
 class ReadOnly(BasePermission):
@@ -158,4 +159,15 @@ class MessagesAPIList(ListAPIView):
         user = get_object_or_404(User, id=user_id)
         queryset = self.queryset.filter(author=user)
         serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AvgAllServicesAPI(APIView):
+    serializer_class = AvgAllServices
+
+    def get(self, request):
+        type_services = TypeService.objects.all()
+        avg_types_rate = type_services.aggregate(avg_rate=Avg("avg_rate"))['avg_rate']
+        serializer = self.serializer_class(data={'avg_rate':avg_types_rate})
+        serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
