@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.contrib.auth.models import User
 from django.db.models import Avg
 from rest_framework import status
@@ -52,7 +54,7 @@ class PutRateTypeServiceAPI(APIView):
     authentication_classes = [BasicAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def put(self, request):
+    def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         type_service = get_object_or_404(TypeService, id=serializer.data['type_service_id'])
@@ -64,9 +66,8 @@ class PutRateTypeServiceAPI(APIView):
         type_service.avg_rate = type_service.rated_type_service.aggregate(rate=Avg("rate"))['rate']
         type_service.count_rate = type_service.users.count()
         type_service.save(update_fields=['avg_rate', 'count_rate'])
-        return Response({"title": type_service.title,
-                         "count_rate": type_service.count_rate,
-                         "avg_rate": type_service.avg_rate},
+        ts_serializer = TypeServiceSerializer(type_service)
+        return Response(ts_serializer.data,
                         status=status.HTTP_201_CREATED)
 
 
@@ -174,7 +175,8 @@ class AvgAllServicesAPI(APIView):
 
     def get(self, request):
         type_services = TypeService.objects.all()
-        avg_types_rate = type_services.aggregate(avg_rate=Avg("avg_rate"))['avg_rate']
+        avg_types_rate = Decimal(type_services.aggregate(avg_rate=Avg("avg_rate"))['avg_rate'])
+        avg_types_rate = avg_types_rate.quantize(Decimal('1.00'))
         serializer = self.serializer_class(data={'avg_rate': avg_types_rate})
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

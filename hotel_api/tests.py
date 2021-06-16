@@ -233,3 +233,10 @@ class AvgRateAllServicesTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['avg_rate'], '4.00')
+
+        # test difficult value
+        self.type_service_4 = TypeService.objects.create(title='Тестовый сервис 4', avg_rate=3.45)
+        self.type_service_5 = TypeService.objects.create(title='Тестовый сервис 5', avg_rate=4.32)
+        self.type_service_6 = TypeService.objects.create(title='Тестовый сервис 6', avg_rate=2.14)
+        response = self.client.get(url)
+        self.assertEqual(response.data['avg_rate'], '3.65')

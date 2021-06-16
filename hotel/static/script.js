@@ -60,7 +60,7 @@ function loadRooms() {
     }
 }
 
-function loadTypeServices() {
+function loadTypeServices(callback) {
     let typeServicesContainer = $(".type-services-container");
      if (typeServicesContainer) {
          $.ajax({
@@ -73,11 +73,11 @@ function loadTypeServices() {
                         "    <div class=\"rate-title\">\n" +
                         `         <span>${data[i].title}</span>\n` +
                         "    </div>\n" +
-                        `        <a class=\"rate-btn\" id=\"typeservice_${data[i].id}_1\" href=\"#\"><span class=\"emoji\">😠</span></a>\n` +
-                        `         <a class=\"rate-btn\" id=\"typeservice_${data[i].id}_2\" href=\"#\"><span class=\"emoji\">😦</span></a>\n` +
-                        `         <a class=\"rate-btn\" id=\"typeservice_${data[i].id}_3\" href=\"#\"><span class=\"emoji\">😑</span></a>\n` +
-                        `         <a class=\"rate-btn\" id=\"typeservice_${data[i].id}_4\" href=\"#\"><span class=\"emoji\">😀</span></a>\n` +
-                        `         <a class=\"rate-btn\" id=\"typeservice_${data[i].id}_5\" href=\"#\"><span class=\"emoji\">😍</span></a>\n` +
+                        `         <a class=\"rate-btn\" id=\"typeservice_${data[i].id}_1\" href=\"#\" onclick='rateOnClick(this)'><span class=\"emoji\">😠</span></a>\n` +
+                        `         <a class=\"rate-btn\" id=\"typeservice_${data[i].id}_2\" href=\"#\" onclick='rateOnClick(this)'><span class=\"emoji\">😦</span></a>\n` +
+                        `         <a class=\"rate-btn\" id=\"typeservice_${data[i].id}_3\" href=\"#\" onclick='rateOnClick(this)'><span class=\"emoji\">😑</span></a>\n` +
+                        `         <a class=\"rate-btn\" id=\"typeservice_${data[i].id}_4\" href=\"#\" onclick='rateOnClick(this)'><span class=\"emoji\">😀</span></a>\n` +
+                        `         <a class=\"rate-btn\" id=\"typeservice_${data[i].id}_5\" href=\"#\" onclick='rateOnClick(this)'><span class=\"emoji\">😍</span></a>\n` +
                         "         <div class=\"rate-avg\">\n" +
                         `             <span id=\"rate-avg_${data[i].id}\">${data[i].avg_rate}</span>\n` +
                         `             <span id=\"rate-avg-count_${data[i].id}\" class=\"rate-avg-count\">(${data[i].count_rate})</span>\n` +
@@ -90,9 +90,39 @@ function loadTypeServices() {
      }
 }
 
+function loadAvgRate() {
+    let avgRateBlock = $(".avg-avg-rate");
+    $.ajax({
+        url: "hotel-api/avg-rate-all-services/",
+        method: "GET",
+        success: function (data) {
+             avgRateBlock.text(`Средний рейтинг: ${data['avg_rate']}`);
+        }
+    });
+}
+
+function rateOnClick(e) {
+        let type_service_id = $(e).attr('id').split('_')[1];
+        let rate = $(e).attr('id').split('_')[2];
+        $.ajax({
+            url: "hotel-api/put_rate_service/",
+            method: "POST",
+            data: {
+                'csrfmiddlewaretoken': csrftoken, 'type_service_id': type_service_id,
+                'rate': rate, 'encoding': 'utf-8'
+            },
+            success: function (data) {
+                $(`#rate-avg_${type_service_id}`).text(data['avg_rate']);
+                $(`#rate-avg-count_${type_service_id}`).text(`(${data['count_rate']})`);
+            }
+        });
+        loadAvgRate();
+}
+
 function loadPage() {
-    loadRooms();
     loadTypeServices();
+    loadRooms();
+    loadAvgRate();
 }
 
 $(document).ready(loadPage())
