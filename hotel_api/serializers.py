@@ -57,14 +57,25 @@ class CreateCheckInSerializer(serializers.ModelSerializer):
         return validate_intersections(CheckIn, data)
 
 
+class CreateRoomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Room
+        fields = ['id', 'number', 'floor', 'number_of_rooms',
+                  'description', 'room_class']
+
+
 class RoomSerializer(serializers.ModelSerializer):
     booked = ReservationSerializer(many=True, read_only=True)
     check_ins = CheckInSerializer(many=True, read_only=True)
+    room_class = serializers.SerializerMethodField()
 
     class Meta:
         model = Room
         fields = ['id', 'number', 'floor', 'number_of_rooms',
                   'description', 'room_class', 'booked', 'check_ins']
+
+    def get_room_class(self, instance):
+        return instance.get_room_class_display()
 
 
 class CreateMessageSerializer(serializers.Serializer):

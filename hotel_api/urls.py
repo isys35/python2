@@ -6,6 +6,7 @@ app_name = "hotel-api"
 
 urlpatterns = [
     path('rooms/', views.RoomAPIList.as_view(), name='rooms'),
+    path('room-create/', views.CreateRoomAPI.as_view(), name='create-room'),
     path('rooms/<int:pk>', views.RoomAPI.as_view(), name='room-detail'),
     path('services/', views.TypeServiceAPIList.as_view()),
     path('put_rate_service/', views.PutRateTypeServiceAPI.as_view(), name='put-rate'),

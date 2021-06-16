@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.urls import path
+from django.urls import path, include
 
 from hotel import views
 
@@ -21,4 +21,5 @@ urlpatterns = [
     path("", views.main_page, name='main'),
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", views.logout_view, name="logout"),
+    path("hotel-api/", include("hotel_api.urls"))
 ]

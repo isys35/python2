@@ -19,7 +19,7 @@ class CRUDRoomTest(TestCase):
     def test_create_room(self):
         # Test for admin-user
         self.client.force_login(self.administrator)
-        url = reverse('hotel-api:rooms')
+        url = reverse('hotel-api:create-room')
         data = {
             "number": 14,
             "floor": 3,
@@ -56,6 +56,20 @@ class CRUDRoomTest(TestCase):
         data['number_of_rooms'] = 4
         response = self.client.put(url, data=data, content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_room(self):
+        data = {
+            "number": 14,
+            "floor": 3,
+            "number_of_rooms": 3,
+            "description": "test description text",
+            "room_class": "ECN"
+        }
+        book = Room.objects.create(**data)
+        url = reverse('hotel-api:room-detail', kwargs={'pk': book.pk})
+        response = self.client.get(url, data=data, content_type="application/json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['room_class'], "Эконом")
 
 
 class ReservationTest(TestCase):

@@ -18,11 +18,7 @@ from .utils import get_intersections
 
 
 def main_page(requests: WSGIRequest) -> HttpResponse:
-    rooms = Room.objects.all()
-    type_services = TypeService.objects.prefetch_related('rated_type_service').all()
-    avg_types_rate = type_services.aggregate(avg_rate=Avg("avg_rate"))['avg_rate']
-    context = {'rooms': rooms, 'type_services': type_services, 'avg_types_rate': avg_types_rate}
-    return render(requests, 'hotel/index.html', context=context)
+    return render(requests, 'hotel/index.html')
 
 
 def room_detail(request: WSGIRequest, pk: int) -> HttpResponse:
