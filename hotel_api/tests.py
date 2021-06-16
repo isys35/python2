@@ -206,3 +206,16 @@ class MessageTest(TestCase):
         url_message_history = reverse('hotel-api:message-history', kwargs={'user_id': self.user.id})
         response = self.client.get(url_message_history)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class AvgRateAllServicesTest(TestCase):
+    def setUp(self) -> None:
+        self.type_service_1 = TypeService.objects.create(title='Тестовый сервис 1', avg_rate=3)
+        self.type_service_2 = TypeService.objects.create(title='Тестовый сервис 2', avg_rate=4)
+        self.type_service_3 = TypeService.objects.create(title='Тестовый сервис 3', avg_rate=5)
+
+    def test_avg_all_ts_rates(self):
+        url = reverse('hotel-api:avg-rate-all-services')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['avg_rate'], '4.00')
