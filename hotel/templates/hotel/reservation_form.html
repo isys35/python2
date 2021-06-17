@@ -1,30 +1,28 @@
 {% extends 'layout/base.html' %}
 {% block content %}
     <div class="container">
-        <form method="post">
-            {% csrf_token %}
-            {% if error_date %}
-                <p>Данная дата уже забронирована!!</p>
-            {% endif %}
+        <script>
+            var room_pk = {{ room_pk }}
+        </script>
+        <div id="error_non_field_errors" class="alert alert-danger" hidden></div>
+        <div class="reservation-container">
             <div class="form-group">
-                {{ form.started_at.errors }}
-                <label for="{{ form.started_at.id_for_label }}">Начальное время брони: </label>
-                <input type="date" class="form-control" id="{{ form.started_at.id_for_label }}" name="{{ form.started_at.name }}" required="">
+                <label for="started_at">Начальное время брони: </label>
+                 <div id="error_started_at" class="alert alert-danger" hidden></div>
+                <input type="datetime-local" class="form-control" id="started_at" name="started_at" required="">
             </div>
             <div class="form-group">
-                {{ form.ended_at.errors }}
-                <label for="{{ form.ended_at.id_for_label }}">Конечное время брони: </label>
-                <input type="date" class="form-control" id="{{ form.ended_at.id_for_label }}" name="{{ form.ended_at.name }}" required="">
+                <label for="ended_at">Конечное время брони: </label>
+                <div id="error_ended_at" class="alert alert-danger" hidden></div>
+                <input type="datetime-local" class="form-control" id="ended_at" name="ended_at" required="">
             </div>
             <div class="form-group">
-                {{ form.description.errors }}
-                <label for="{{ form.description.id_for_label }}">Описание: </label>
-                <textarea class="form-control" rows="5" id="{{ form.description.id_for_label }}" name="{{ form.description.name }}"></textarea>
+                <label for="description">Описание: </label>
+                <div id="error_description" class="alert alert-danger" hidden></div>
+                <textarea class="form-control" rows="5" id="description" name="description"></textarea>
             </div>
-            <input type="submit" class="btn btn-success" value="Забронировать">
-        </form>
-        {% if reservations %}
-            {% include "hotel/reservations-view.html" with reservations=reservations %}
-        {% endif %}
+            <button id="create-reservation-room-btn" class="btn btn-success">Забронировать</button>
+            {% include "hotel/reservations-view.html" %}
+        </div>
     </div>
 {% endblock %}

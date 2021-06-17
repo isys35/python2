@@ -1,5 +1,5 @@
 {% extends 'layout/base.html' %}
-
+{% load static %}
 {% block content %}
     <div class="container">
         <div class="rooms-container"></div>
@@ -15,4 +15,7 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'scripts/main_page.js' %}"></script>
 {% endblock %}

@@ -1,4 +1,5 @@
 {% extends 'layout/base.html' %}
+{% load static %}
 {% block content %}
     <div class="container">
         <div class="room-container">
@@ -27,4 +28,7 @@
             {% include "hotel/reservations-view.html"%}
         </div>
     </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'scripts/room_detail.js' %}"></script>
 {% endblock %}

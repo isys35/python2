@@ -43,6 +43,12 @@ def delete_room_page(request: WSGIRequest, pk: int) -> HttpResponse:
     return render(request, 'hotel/room_confirm_delete.html', context=context)
 
 
+@login_required
+def make_reservation(request: WSGIRequest, pk: int):
+    context = {'room_pk': pk}
+    return render(request, "hotel/reservation_form.html", context)
+
+
 class LoginView(View):
     def get(self, request: WSGIRequest) -> HttpResponse:
         return render(request, "hotel/login.html")
@@ -62,29 +68,6 @@ def logout_view(request: WSGIRequest):
     logout(request)
     return redirect("hotel:main")
 
-
-@login_required
-def make_reservation(request: WSGIRequest, pk):
-    reservations = Reservation.objects.filter(room_id=pk)
-    if request.method == 'POST':
-        reservation_form = ReservationForm(request.POST)
-        if reservation_form.is_valid():
-            reservation = reservation_form.save(commit=False)
-            reservation.user = request.user
-            reservation.room_id = pk
-            intersections_of_dates = get_intersections(reservation)
-            if intersections_of_dates:
-                context = {'form': reservation_form, 'reservations': reservations, 'error_date': True}
-                return render(request, "hotel/reservation_form.html", context)
-            reservation.save()
-            reservation_form.save_m2m()
-            return redirect('hotel:detail', pk)
-        else:
-            context = {'form': reservation_form, 'reservations': reservations}
-            return render(request, "hotel/reservation_form.html", context)
-    reservation_form = ReservationForm()
-    context = {'form': reservation_form, 'reservations': reservations}
-    return render(request, "hotel/reservation_form.html", context)
 
 
 @login_required

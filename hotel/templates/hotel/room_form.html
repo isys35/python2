@@ -1,5 +1,5 @@
 {% extends 'layout/base.html' %}
-
+{% load static %}
 {% block content %}
 <div class="container">
         <script>
@@ -36,4 +36,7 @@
         </div>
         <button id="change-room-btn" class="btn btn-success">Сохранить</button>
 </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'scripts/change_room.js' %}"></script>
 {% endblock %}
