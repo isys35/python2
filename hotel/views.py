@@ -37,18 +37,10 @@ def edit_room_page(request: WSGIRequest, pk: int) -> HttpResponse:
     return render(request, 'hotel/room_form.html', context=context)
 
 
-class RoomEditView(UpdateView):
-    model = Room
-    form_class = RoomForm
-
-    def get_success_url(self):
-        return reverse_lazy('hotel:detail',
-                            kwargs={'pk': self.object.pk})
-
-
-class RoomDeleteView(DeleteView):
-    model = Room
-    success_url = reverse_lazy('hotel:main')
+@staff_member_required
+def delete_room_page(request: WSGIRequest, pk: int) -> HttpResponse:
+    context = {'room_pk': pk}
+    return render(request, 'hotel/room_confirm_delete.html', context=context)
 
 
 class LoginView(View):
