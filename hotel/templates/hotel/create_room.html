@@ -2,38 +2,35 @@
 
 {% block content %}
 <div class="container">
-    <form method="post">
-        {% csrf_token %}
         <div class="form-group">
-            {{ form.number.errors }}
-            <label for="{{ form.number.id_for_label }}">Номер комнаты: </label>
-            <input type="number" class="form-control" id="{{ form.number.id_for_label }}" name="{{ form.number.name }}" min="0" required="">
+            <label for="number">Номер комнаты: </label>
+            <div id="error_number" class="alert alert-danger" hidden></div>
+            <input type="number" class="form-control" id="number" name="number" min="0" required="">
         </div>
         <div class="form-group">
-            {{ form.floor.errors }}
-            <label for="{{ form.floor.id_for_label }}">Этаж: </label>
-            <input type="number" class="form-control" id="{{ form.floor.id_for_label }}" name="{{ form.floor.name }}" min="0" required="">
+            <label for="floor">Этаж: </label>
+            <div id="error_floor" class="alert alert-danger" hidden></div>
+            <input type="number" class="form-control" id="floor" name="floor" min="0" required="">
         </div>
         <div class="form-group">
-            {{ form.number_of_rooms.errors }}
-            <label for="{{ form.number_of_rooms.id_for_label }}">Кол-во комнат: </label>
-            <input type="number" class="form-control" id="{{ form.number_of_rooms.id_for_label }}" name="{{ form.number_of_rooms.name }}" min="0" required="">
+            <label for="number_of_rooms">Кол-во комнат: </label>
+            <div id="error_number_of_rooms" class="alert alert-danger" hidden></div>
+            <input type="number" class="form-control" id="number_of_rooms" name="number_of_rooms" min="0" required="">
         </div>
          <div class="form-group">
-             {{ form.description.errors }}
-            <label for="{{ form.description.id_for_label }}">Описание: </label>
-            <textarea class="form-control" rows="5" id="{{ form.description.id_for_label }}" name="{{ form.description.name }}"></textarea>
+            <label for="description">Описание: </label>
+            <div id="error_description" class="alert alert-danger" hidden></div>
+            <textarea class="form-control" rows="5" id="description" name="description"></textarea>
         </div>
          <div class="form-group">
-            {{ form.room_class.errors }}
-            <label for="{{ form.room_class.id_for_label }}">Класс номера: </label>
-              <select class="form-control" id="{{ form.room_class.id_for_label }}" name="{{ form.room_class.name }}">
-                    {% for id, name in form.room_class.field.choices %}
-                        <option value="{{ id }}">{{ name }}</option>
-                    {% endfor %}
+            <label for="room_class">Класс номера: </label>
+             <div id="error_room_class" class="alert alert-danger" hidden></div>
+              <select class="form-control" id="room_class" name="room_class">
+                  <option value="ECN">Эконом</option>
+                  <option value="STD">Стандарт</option>
+                  <option value="VIP">VIP</option>
               </select>
         </div>
-        <input type="submit" class="btn btn-success" value="Добавить">
-    </form>
+        <button id="create-room-btn" class="btn btn-success">Добавить</button>
 </div>
 {% endblock %}

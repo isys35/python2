@@ -54,7 +54,7 @@ class PutRateTypeServiceAPI(APIView):
     authentication_classes = [BasicAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
+    def put(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         type_service = get_object_or_404(TypeService, id=serializer.data['type_service_id'])

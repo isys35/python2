@@ -20,6 +20,11 @@ from .utils import get_intersections
 def main_page(requests: WSGIRequest) -> HttpResponse:
     return render(requests, 'hotel/index.html')
 
+@login_required
+@staff_member_required
+def create_room_page(requests: WSGIRequest) -> HttpResponse:
+    return render(requests, 'hotel/create_room.html')
+
 
 def room_detail(request: WSGIRequest, pk: int) -> HttpResponse:
     today = datetime.date.today()
@@ -39,11 +44,6 @@ class RoomEditView(UpdateView):
         return reverse_lazy('hotel:detail',
                             kwargs={'pk': self.object.pk})
 
-
-class RoomCreateView(CreateView):
-    template_name = 'hotel/create_room.html'
-    form_class = RoomForm
-    success_url = reverse_lazy('hotel:main')
 
 
 class RoomDeleteView(DeleteView):
@@ -178,5 +178,3 @@ def profile(request: WSGIRequest):
     messages = Message.objects.filter(author_id=request.user.id).order_by('pub_date')
     context = {'messages': messages}
     return render(request, "hotel/profile.html", context=context)
-
-

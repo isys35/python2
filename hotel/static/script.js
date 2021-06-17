@@ -14,6 +14,7 @@ function getCookie(name) {
     return cookieValue;
 }
 var csrftoken = getCookie('csrftoken');
+var HOST = "http://127.0.0.1:8000/"
 /*$(document).ready( function () {
     $(".rate-btn").on('click', function () {
         let type_service_id = $(this).attr('id').split('_')[1];
@@ -41,9 +42,9 @@ var csrftoken = getCookie('csrftoken');
 
 function loadRooms() {
     let roomsContainer = $(".rooms-container");
-    if (roomsContainer) {
+    if (roomsContainer.length) {
         $.ajax({
-            url: "hotel-api/rooms/",
+            url: HOST + "hotel-api/rooms/",
             method: "GET",
             success: function (data) {
                 for (let i=0; i<data.length; ++i) {
@@ -60,11 +61,11 @@ function loadRooms() {
     }
 }
 
-function loadTypeServices(callback) {
+function loadTypeServices() {
     let typeServicesContainer = $(".type-services-container");
-     if (typeServicesContainer) {
+     if (typeServicesContainer.length) {
          $.ajax({
-            url: "hotel-api/services/",
+            url: HOST + "hotel-api/services/",
             method: "GET",
             success: function (data) {
                 for (let i=0; i<data.length; ++i) {
@@ -92,25 +93,29 @@ function loadTypeServices(callback) {
 
 function loadAvgRate() {
     let avgRateBlock = $(".avg-avg-rate");
-    $.ajax({
-        url: "hotel-api/avg-rate-all-services/",
-        method: "GET",
-        success: function (data) {
-             avgRateBlock.text(`Средний рейтинг: ${data['avg_rate']}`);
-        }
-    });
+    if (avgRateBlock.length) {
+        $.ajax({
+            url: HOST + "hotel-api/avg-rate-all-services/",
+            method: "GET",
+            success: function (data) {
+                avgRateBlock.text(`Средний рейтинг: ${data['avg_rate']}`);
+            }
+        });
+    }
+
 }
 
 function rateOnClick(e) {
         let type_service_id = $(e).attr('id').split('_')[1];
         let rate = $(e).attr('id').split('_')[2];
         $.ajax({
-            url: "hotel-api/put_rate_service/",
-            method: "POST",
+            url: HOST + "hotel-api/put_rate_service/",
+            method: "PUT",
             data: {
-                'csrfmiddlewaretoken': csrftoken, 'type_service_id': type_service_id,
+                'type_service_id': type_service_id,
                 'rate': rate, 'encoding': 'utf-8'
             },
+            "headers": {'X-CSRFToken': csrftoken},
             success: function (data) {
                 $(`#rate-avg_${type_service_id}`).text(data['avg_rate']);
                 $(`#rate-avg-count_${type_service_id}`).text(`(${data['count_rate']})`);
@@ -119,10 +124,38 @@ function rateOnClick(e) {
         loadAvgRate();
 }
 
+function onSubmitCreateRoomForm() {
+    $("#create-room-btn").on("click", function () {
+        let sendedData = {"csrfmiddlewaretoken": csrftoken,
+                            "number":$("#number").val(),
+                            "floor":$("#floor").val(),
+                            "number_of_rooms":$("#number_of_rooms").val(),
+                            "description":$("#description").val(),
+                            "room_class":$("#room_class").val()}
+        $(".alert.alert-danger").attr("hidden", "");
+        $.ajax({
+            url: HOST + "hotel-api/room-create/",
+            method: "post",
+            data:sendedData ,
+            success: function (data) {
+                 window.location.href = HOST + `hotel/room/${data.id}`;
+            },
+            error: function (data) {
+                $.each(data.responseJSON, function( k, v ) {
+                    let id_el = "#error_" + k;
+                    $(id_el).removeAttr("hidden");
+                    $(id_el).text(v);
+                });
+            }
+        });
+	});
+}
+
 function loadPage() {
     loadTypeServices();
     loadRooms();
     loadAvgRate();
+    onSubmitCreateRoomForm();
 }
 
 $(document).ready(loadPage())
