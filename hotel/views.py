@@ -26,18 +26,15 @@ def create_room_page(requests: WSGIRequest) -> HttpResponse:
     return render(requests, 'hotel/create_room.html')
 
 
-def detail_room_page(request:WSGIRequest, pk: int) -> HttpResponse:
+def detail_room_page(request: WSGIRequest, pk: int) -> HttpResponse:
     context = {'room_pk': pk}
     return render(request, 'hotel/room.html', context=context)
 
-# def room_detail(request: WSGIRequest, pk: int) -> HttpResponse:
-#     today = datetime.date.today()
-#     queryset = Reservation.objects.exclude(ended_at__lte=today)
-#     pr = Prefetch("booked", queryset=queryset)
-#     room = Room.objects.prefetch_related(pr).get(pk=pk)
-#     check_in_check = CheckIn.objects.filter(room_id=pk, ended_at__gte=today, started_at__lte=today).exists()
-#     context = {'room': room, 'check_in_check': check_in_check}
-#     return render(request, 'hotel/room.html', context=context)
+
+@staff_member_required
+def edit_room_page(request: WSGIRequest, pk: int) -> HttpResponse:
+    context = {'room_pk': pk}
+    return render(request, 'hotel/room_form.html', context=context)
 
 
 class RoomEditView(UpdateView):
