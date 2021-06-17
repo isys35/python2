@@ -1,28 +1,30 @@
 {% extends 'layout/base.html' %}
 {% block content %}
     <div class="container">
-        <h1>Номер {{ room.number }}</h1>
-        {% if check_in_check %}
-            <h2>В данный момент комната занята</h2>
-        {% endif %}
-        <ul>
-            <li>Кол-во комнат: {{ room.number_of_rooms }}</li>
-            <li>Этаж: {{ room.floor }}</li>
-            <li>Класс: {{ room.get_room_class_display }}</li>
-            <li>Описание: {{ room.description }}</li>
-            {% if user.is_authenticated %}
-            <li>
-                {% if user.is_staff %}
-                    <a href="{% url "hotel:edit" pk=room.pk %}">Изменить</a>
-                    <a href="{% url "hotel:delete" pk=room.pk %}">Удалить</a>
-                    {% if not check_in_check %}
-                        <a href="{% url "hotel:check-in" room_id=room.id %}">Заселить</a>
+        <div class="room-container">
+            <script>
+                var room_pk = {{ room_pk }}
+            </script>
+            <h1>Номер <span class="room-number"></span></h1>
+            <ul>
+                <li>Кол-во комнат: <span class="room-number_of_rooms"></span></li>
+                <li>Этаж: <span class="room-floor"></span></li>
+                <li>Класс: <span class="room-room_class"></span></li>
+                <li>Описание: <span class="room-description"></span></li>
+                {% if user.is_authenticated %}
+                <li>
+                    {% if user.is_staff %}
+                        <a href="{% url "hotel:edit" pk=room_pk %}">Изменить</a>
+                        <a href="{% url "hotel:delete" pk=room_pk %}">Удалить</a>
+                        {% if not check_in_check %}
+                            <a href="{% url "hotel:check-in" room_id=room_pk %}">Заселить</a>
+                        {% endif %}
                     {% endif %}
+                    <a href="{% url "hotel:reservation" pk=room_pk %}">Забронировать</a>
+                </li>
                 {% endif %}
-                <a href="{% url "hotel:reservation" pk=room.pk %}">Забронировать</a>
-            </li>
-            {% endif %}
-            {% include "hotel/reservations-view.html" with reservations=room.booked.all %}
-        </ul>
+            </ul>
+            {% include "hotel/reservations-view.html"%}
+        </div>
     </div>
 {% endblock %}

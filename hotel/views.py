@@ -20,20 +20,24 @@ from .utils import get_intersections
 def main_page(requests: WSGIRequest) -> HttpResponse:
     return render(requests, 'hotel/index.html')
 
-@login_required
+
 @staff_member_required
 def create_room_page(requests: WSGIRequest) -> HttpResponse:
     return render(requests, 'hotel/create_room.html')
 
 
-def room_detail(request: WSGIRequest, pk: int) -> HttpResponse:
-    today = datetime.date.today()
-    queryset = Reservation.objects.exclude(ended_at__lte=today)
-    pr = Prefetch("booked", queryset=queryset)
-    room = Room.objects.prefetch_related(pr).get(pk=pk)
-    check_in_check = CheckIn.objects.filter(room_id=pk, ended_at__gte=today, started_at__lte=today).exists()
-    context = {'room': room, 'check_in_check': check_in_check}
+def detail_room_page(request:WSGIRequest, pk: int) -> HttpResponse:
+    context = {'room_pk': pk}
     return render(request, 'hotel/room.html', context=context)
+
+# def room_detail(request: WSGIRequest, pk: int) -> HttpResponse:
+#     today = datetime.date.today()
+#     queryset = Reservation.objects.exclude(ended_at__lte=today)
+#     pr = Prefetch("booked", queryset=queryset)
+#     room = Room.objects.prefetch_related(pr).get(pk=pk)
+#     check_in_check = CheckIn.objects.filter(room_id=pk, ended_at__gte=today, started_at__lte=today).exists()
+#     context = {'room': room, 'check_in_check': check_in_check}
+#     return render(request, 'hotel/room.html', context=context)
 
 
 class RoomEditView(UpdateView):
@@ -43,7 +47,6 @@ class RoomEditView(UpdateView):
     def get_success_url(self):
         return reverse_lazy('hotel:detail',
                             kwargs={'pk': self.object.pk})
-
 
 
 class RoomDeleteView(DeleteView):

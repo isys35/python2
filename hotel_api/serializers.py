@@ -25,10 +25,18 @@ class RateTypeServiceSerializer(serializers.Serializer):
 
 class ReservationSerializer(serializers.ModelSerializer):
     user = CharField(source="user.username")
+    started_at = serializers.SerializerMethodField()
+    ended_at = serializers.SerializerMethodField()
 
     class Meta:
         model = Reservation
         fields = ['user', 'room', 'description', 'started_at', 'ended_at']
+
+    def get_started_at(self, instance):
+        return instance.started_at.strftime("%d.%m.%Y %H:%M")
+
+    def get_ended_at(self, instance):
+        return instance.ended_at.strftime("%d.%m.%Y %H:%M")
 
 
 class CreateReservationSerializer(serializers.ModelSerializer):
@@ -42,10 +50,18 @@ class CreateReservationSerializer(serializers.ModelSerializer):
 
 class CheckInSerializer(serializers.ModelSerializer):
     user = CharField(source="user.username")
+    started_at = serializers.SerializerMethodField()
+    ended_at = serializers.SerializerMethodField()
 
     class Meta:
         model = CheckIn
         fields = ['user', 'room', 'started_at', 'ended_at']
+
+    def get_started_at(self, instance):
+        return instance.started_at.strftime("%d.%m.%Y %H:%M")
+
+    def get_ended_at(self, instance):
+        return instance.ended_at.strftime("%d.%m.%Y %H:%M")
 
 
 class CreateCheckInSerializer(serializers.ModelSerializer):

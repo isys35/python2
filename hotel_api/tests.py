@@ -127,7 +127,8 @@ class ReservationTest(TestCase):
         url = reverse('hotel-api:room-reservations', kwargs={'room_id': self.room.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
+        self.assertEqual(response.data[0]['started_at'], '01.06.2021 15:00')
+        self.assertEqual(response.data[0]['ended_at'], '10.06.2021 15:00')
         # test bad room_id
         url = reverse('hotel-api:room-reservations', kwargs={'room_id': 31})
         response = self.client.get(url)
