@@ -1,4 +1,5 @@
 {% extends 'layout/base.html' %}
+{% load static %}
 {% block content %}
     <div class="container">
         <script>
@@ -7,4 +8,7 @@
         <h2>Удаление номера!</h2>
         <input id="delete-room-btn" type="submit" class="btn btn-danger" value="Удалить">
     </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'scripts/delete_room.js' %}"></script>
 {% endblock %}
