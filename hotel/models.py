@@ -44,7 +44,7 @@ class Message(models.Model):
     class Meta:
         verbose_name_plural = 'Сообщения'
         verbose_name = 'Сообщение'
-        ordering = ['-pub_date']
+        ordering = ['pub_date']
 
 
 class Reservation(models.Model):

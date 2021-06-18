@@ -7,7 +7,7 @@ function loadMessages() {
                 for (let i=0; i<data.length; i++){
                     let innerHtml = "<div class=\"message-text\">\n" +
                         `                <span>${data[i].text}</span>\n` +
-                        "                <span class=\"message-time\"></span>\n" +
+                        `                <span class=\"message-time\">${data[i].pub_date}</span>\n` +
                         "            </div>";
                     $(".dialog").append(innerHtml);
                 }
