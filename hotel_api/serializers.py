@@ -65,9 +65,11 @@ class CheckInSerializer(serializers.ModelSerializer):
 
 
 class CreateCheckInSerializer(serializers.ModelSerializer):
+    username = serializers.CharField()
+
     class Meta:
         model = CheckIn
-        fields = ['user', 'room', 'started_at', 'ended_at']
+        fields = ['username', 'room', 'started_at', 'ended_at']
 
     def validate(self, data):
         return validate_intersections(CheckIn, data)

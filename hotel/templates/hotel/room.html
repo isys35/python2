@@ -18,7 +18,7 @@
                         <a href="{% url "hotel:edit" pk=room_pk %}">Изменить</a>
                         <a href="{% url "hotel:delete" pk=room_pk %}">Удалить</a>
                         {% if not check_in_check %}
-                            <a href="{% url "hotel:check-in" room_id=room_pk %}">Заселить</a>
+                            <a href="{% url "hotel:check-in" pk=room_pk %}">Заселить</a>
                         {% endif %}
                     {% endif %}
                     <a href="{% url "hotel:reservation" pk=room_pk %}">Забронировать</a>

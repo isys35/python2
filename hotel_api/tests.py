@@ -185,7 +185,7 @@ class CheckInTest(TestCase):
         self.client.force_login(self.user)
         url = reverse('hotel-api:create-checkin')
         data = {
-            "user": self.user.id,
+            "username": self.user.username,
             "room": self.room.id,
             "started_at": datetime(day=15, month=6, year=2021, hour=15, minute=0),
             "ended_at": datetime(day=20, month=6, year=2021, hour=15, minute=0)
@@ -197,6 +197,14 @@ class CheckInTest(TestCase):
         self.client.force_login(self.administrator)
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # test username
+        check_in = CheckIn.objects.get(user_id=self.user.id,
+                                       room_id=self.room.id,
+                                       started_at=data['started_at'],
+                                       ended_at=data['ended_at'])
+
+        self.assertEqual(check_in.user.username, data['username'])
 
 
 class MessageTest(TestCase):

@@ -99,7 +99,8 @@ class CreateCheckInAPI(CreateAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         room = get_object_or_404(Room, id=serializer.data['room'])
-        self.queryset.create(user=request.user,
+        user = get_object_or_404(User, username=serializer.data['username'])
+        self.queryset.create(user=user,
                              room_id=room.id,
                              started_at=serializer.data['started_at'],
                              ended_at=serializer.data['ended_at'])
