@@ -1,8 +1,14 @@
 {% extends 'layout/base.html' %}
-
+{% load static %}
 {% block content %}
     <div class="container">
-        <h1>Сообщения пользователя {{ author.username }}</h1>
-        {% include "hotel/dialog-view.html" with messages=messages %}
+        <script>
+            var user_id = {{ user_id }}
+        </script>
+        <h1>Сообщения пользователя <span class="head-username"></span></h1>
+        <div class="dialog"></div>
     </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'scripts/messeges.js' %}"></script>
 {% endblock %}

@@ -53,6 +53,13 @@ def admin_info(request: WSGIRequest) -> HttpResponse:
     return render(request, "hotel/admin-info.html")
 
 
+@staff_member_required
+def messages_history(request: WSGIRequest, user_id: int):
+    context = {'user_id': user_id}
+    return render(request, "hotel/messages-history.html", context=context)
+
+
+
 class LoginView(View):
     def get(self, request: WSGIRequest) -> HttpResponse:
         return render(request, "hotel/login.html")
@@ -86,14 +93,6 @@ def logout_view(request: WSGIRequest):
 #     chek_ins = CheckIn.objects.select_related().annotate(last_message=sq, last_message_date=sq2).all()
 #     context = {'chek_ins': chek_ins}
 #     return render(request, "hotel/admin-info.html", context=context)
-
-
-@staff_member_required
-def messages_history(request: WSGIRequest, user_id: int):
-    messages = Message.objects.filter(author_id=user_id).order_by('pub_date')
-    author = User.objects.get(id=user_id)
-    context = {'messages': messages, 'author': author}
-    return render(request, "hotel/messages-history.html", context=context)
 
 
 @login_required

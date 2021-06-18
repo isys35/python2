@@ -10,7 +10,7 @@ function loadCheckIns() {
                     if (data[i].last_message_today) {
                         innerHtml = "<div class=\"check-in-info\">\n" +
                      `            <h2>Номер ${data[i].room}</h2>\n` +
-                     `            <p>Живёт: ${data[i].user}</p>\n` +
+                     `            <p>Живёт: ${data[i].user.username}</p>\n` +
                      `            <p>Заехал: ${data[i].started_at}</p>\n` +
                      `            <p>Выезжает: ${data[i].ended_at}</p>\n` +
                      "            <div class=\"last-message\">\n" +
@@ -22,14 +22,14 @@ function loadCheckIns() {
                      `                        <span>${data[i].last_message_today.text}</span>\n` +
                      `                        <span class=\"last-message-time\">${data[i].last_message_today.pub_date}</span>\n` +
                      "                    </div>\n" +
-                     "                    <a href=\"/hotel/messages-history/\">Посмотреть историю сообщений</a>\n" +
+                     `                    <a href=\"/hotel/messages-history/${data[i].user.id}\">Посмотреть историю сообщений</a>\n` +
                      "                </div>\n" +
                      "                </div>\n" +
                      "        </div>"
                     } else {
                         innerHtml = "<div class=\"check-in-info\">\n" +
                      `            <h2>Номер ${data[i].room}</h2>\n` +
-                     `            <p>Живёт: ${data[i].user}</p>\n` +
+                     `            <p>Живёт: ${data[i].user.username}</p>\n` +
                      `            <p>Заехал: ${data[i].started_at}</p>\n` +
                      `            <p>Выезжает: ${data[i].ended_at}</p>\n` +
                      "            <div class=\"last-message\">\n" +

@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from rest_framework import serializers
 from rest_framework.fields import CharField
@@ -72,17 +73,24 @@ class CreateMessageSerializer(serializers.Serializer):
 
 class MessageSerializer(serializers.ModelSerializer):
     pub_date = serializers.SerializerMethodField()
+    username = serializers.CharField(source='author.username')
 
     class Meta:
         model = Message
-        fields = ['text', 'pub_date']
+        fields = ['text', 'pub_date', 'username']
 
     def get_pub_date(self, instance):
         return instance.pub_date.strftime("%d.%m.%Y %H:%M")
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username']
+
+
 class CheckInSerializer(serializers.ModelSerializer):
-    user = CharField(source="user.username")
+    user = UserSerializer()
     room = CharField(source="room.number")
     started_at = serializers.SerializerMethodField()
     ended_at = serializers.SerializerMethodField()
