@@ -1,7 +1,8 @@
+import datetime
 from decimal import Decimal
 
 from django.contrib.auth.models import User
-from django.db.models import Avg
+from django.db.models import Avg, Subquery, OuterRef
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -115,6 +116,7 @@ class ReservationAPIList(ListAPIView):
 class CheckInAPIList(ListAPIView):
     queryset = CheckIn.objects
     serializer_class = CheckInSerializer
+    permission_classes = [IsAdminUser]
 
 
 class ReservationAPI(RetrieveUpdateDestroyAPIView):
@@ -155,7 +157,8 @@ class SendMessageAPI(APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        Message.objects.create(author=request.user, text=serializer.data['text'])
+        message = Message.objects.create(author=request.user, text=serializer.data['text'])
+        CheckIn.objects.filter(user=request.user).update(last_message_today=message)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 

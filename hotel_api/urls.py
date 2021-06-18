@@ -13,7 +13,7 @@ urlpatterns = [
     path('create_reservation/', views.CreateReservationAPI.as_view(), name='create-reservation'),
     path('create_checkin/', views.CreateCheckInAPI.as_view(), name='create-checkin'),
     path('reservations/', views.ReservationAPIList.as_view()),
-    path('checkins/', views.CheckInAPIList.as_view()),
+    path('checkins/', views.CheckInAPIList.as_view(), name="check-ins"),
     path('reservations/<int:pk>', views.ReservationAPI.as_view()),
     path('checkins/<int:pk>', views.CheckInAPI.as_view()),
     path('room_reservations/<int:room_id>', views.RoomReservationsAPIList.as_view(), name='room-reservations'),

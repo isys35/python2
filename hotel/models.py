@@ -73,6 +73,12 @@ class CheckIn(models.Model):
                              verbose_name='Пользователь')
     started_at = models.DateTimeField()
     ended_at = models.DateTimeField()
+    last_message_today = models.ForeignKey(Message,
+                                           on_delete=models.SET_NULL,
+                                           blank=True,
+                                           null=True,
+                                           verbose_name='Последнее сообщение за сегодня'
+                                           )
 
     class Meta:
         verbose_name_plural = 'Заселения'

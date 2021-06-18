@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 
-from hotel.models import Room, Reservation, TypeService, CheckIn
+from hotel.models import Room, Reservation, TypeService, CheckIn, Message
 
 
 class CRUDRoomTest(TestCase):
@@ -206,6 +206,18 @@ class CheckInTest(TestCase):
 
         self.assertEqual(check_in.user.username, data['username'])
 
+    def test_get_list_checkin(self):
+        # test by user
+        self.client.force_login(self.user)
+        url = reverse('hotel-api:check-ins')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        # test by admin
+        self.client.force_login(self.administrator)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 class MessageTest(TestCase):
 
@@ -215,6 +227,7 @@ class MessageTest(TestCase):
         self.administrator.save()
         self.user = User.objects.create_user(username='testuser')
 
+
     def test_send_message(self):
         self.client.force_login(self.user)
         url = reverse('hotel-api:send-message')
@@ -223,6 +236,27 @@ class MessageTest(TestCase):
         }
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        #test last message in check_in
+        room_data = {
+            "number": 14,
+            "floor": 3,
+            "number_of_rooms": 3,
+            "description": "test description text",
+            "room_class": "ECN"
+        }
+        room = Room.objects.create(**room_data)
+        checkin_data = {
+            "user_id": self.user.id,
+            "room_id": room.id,
+            "started_at": datetime(day=1, month=6, year=2021, hour=15, minute=0),
+            "ended_at": datetime(day=10, month=6, year=2021, hour=15, minute=0)
+        }
+        CheckIn.objects.create(**checkin_data)
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Message.objects.first(), CheckIn.objects.get(**checkin_data).last_message_today)
+
 
         # test message-history
         self.client.force_login(self.administrator)

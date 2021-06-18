@@ -48,22 +48,6 @@ class CreateReservationSerializer(serializers.ModelSerializer):
         return validate_intersections(Reservation, data)
 
 
-class CheckInSerializer(serializers.ModelSerializer):
-    user = CharField(source="user.username")
-    started_at = serializers.SerializerMethodField()
-    ended_at = serializers.SerializerMethodField()
-
-    class Meta:
-        model = CheckIn
-        fields = ['user', 'room', 'started_at', 'ended_at']
-
-    def get_started_at(self, instance):
-        return instance.started_at.strftime("%d.%m.%Y %H:%M")
-
-    def get_ended_at(self, instance):
-        return instance.ended_at.strftime("%d.%m.%Y %H:%M")
-
-
 class CreateCheckInSerializer(serializers.ModelSerializer):
     username = serializers.CharField()
 
@@ -82,6 +66,39 @@ class CreateRoomSerializer(serializers.ModelSerializer):
                   'description', 'room_class']
 
 
+class CreateMessageSerializer(serializers.Serializer):
+    text = serializers.CharField()
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    pub_date = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Message
+        fields = ['text', 'pub_date']
+
+    def get_pub_date(self, instance):
+        return instance.pub_date.strftime("%d.%m.%Y %H:%M")
+
+
+class CheckInSerializer(serializers.ModelSerializer):
+    user = CharField(source="user.username")
+    room = CharField(source="room.number")
+    started_at = serializers.SerializerMethodField()
+    ended_at = serializers.SerializerMethodField()
+    last_message_today = MessageSerializer(read_only=True)
+
+    class Meta:
+        model = CheckIn
+        fields = ['user', 'room', 'started_at', 'ended_at', 'last_message_today']
+
+    def get_started_at(self, instance):
+        return instance.started_at.strftime("%d.%m.%Y %H:%M")
+
+    def get_ended_at(self, instance):
+        return instance.ended_at.strftime("%d.%m.%Y %H:%M")
+
+
 class RoomSerializer(serializers.ModelSerializer):
     booked = ReservationSerializer(many=True, read_only=True)
     check_ins = CheckInSerializer(many=True, read_only=True)
@@ -94,13 +111,3 @@ class RoomSerializer(serializers.ModelSerializer):
 
     def get_room_class(self, instance):
         return instance.get_room_class_display()
-
-
-class CreateMessageSerializer(serializers.Serializer):
-    text = serializers.CharField()
-
-
-class MessageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Message
-        fields = ['text', 'pub_date']

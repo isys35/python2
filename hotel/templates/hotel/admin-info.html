@@ -1,28 +1,10 @@
 {% extends 'layout/base.html' %}
-
+{% load static %}
 {% block content %}
     <div class="container">
-        {% for check_in in chek_ins %}
-        <div class="check-in-info">
-            <h2><a href="{% url 'hotel:detail' pk=check_in.room_id  %}">Номер {{ check_in.room.number }}</a></h2>
-            <p>Живёт: {{ check_in.user.username }}</p>
-            <p>Заехал: {{ check_in.started_at|date:"Y-m-d" }}</p>
-            <p>Выезжает: {{ check_in.ended_at|date:"Y-m-d" }}</p>
-            {% if check_in.last_message %}
-                <div class="last-message">
-                    <div class="last-message-head">
-                    <span>Последнее сообщение сегодня:</span>
-                    </div>
-                    <div class="last-message-text-block">
-                        <div class="last-message-text">
-                            <span>{{ check_in.last_message }}</span>
-                            <span class="last-message-time">{{ check_in.last_message_date|date:"H:i:s" }}</span>
-                        </div>
-                        <a href="{% url 'hotel:messages-history' user_id=check_in.user_id %}">Посмотреть историю сообщений</a>
-                    </div>
-                </div>
-            {% endif %}
-        </div>
-        {% endfor %}
+        <div class="admin-info-container"></div>
     </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'scripts/admin_info.js' %}"></script>
 {% endblock %}

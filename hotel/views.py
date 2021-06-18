@@ -3,13 +3,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import Subquery, OuterRef
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
-import datetime
 
-from .models import CheckIn, Message
+from .models import Message
 
 
 def main_page(requests: WSGIRequest) -> HttpResponse:
@@ -50,6 +48,11 @@ def chek_in(request: WSGIRequest, pk: int) -> HttpResponse:
     return render(request, "hotel/check_in_form.html", context)
 
 
+@staff_member_required
+def admin_info(request: WSGIRequest) -> HttpResponse:
+    return render(request, "hotel/admin-info.html")
+
+
 class LoginView(View):
     def get(self, request: WSGIRequest) -> HttpResponse:
         return render(request, "hotel/login.html")
@@ -70,19 +73,19 @@ def logout_view(request: WSGIRequest):
     return redirect("hotel:main")
 
 
-@staff_member_required
-def admin_info(request: WSGIRequest):
-    today = datetime.date.today()
-    tomorrow = today + datetime.timedelta(days=1)
-    sq = Subquery(Message.objects.filter(author_id=OuterRef('user_id'),
-                                         pub_date__gte=today,
-                                         pub_date__lt=tomorrow).values('text')[:1])
-    sq2 = Subquery(Message.objects.filter(author_id=OuterRef('user_id'),
-                                          pub_date__gte=today,
-                                          pub_date__lt=tomorrow).values('pub_date')[:1])
-    chek_ins = CheckIn.objects.select_related().annotate(last_message=sq, last_message_date=sq2).all()
-    context = {'chek_ins': chek_ins}
-    return render(request, "hotel/admin-info.html", context=context)
+# @staff_member_required
+# def admin_info(request: WSGIRequest):
+#     today = datetime.date.today()
+#     tomorrow = today + datetime.timedelta(days=1)
+#     sq = Subquery(Message.objects.filter(author_id=OuterRef('user_id'),
+#                                          pub_date__gte=today,
+#                                          pub_date__lt=tomorrow).values('text')[:1])
+#     sq2 = Subquery(Message.objects.filter(author_id=OuterRef('user_id'),
+#                                           pub_date__gte=today,
+#                                           pub_date__lt=tomorrow).values('pub_date')[:1])
+#     chek_ins = CheckIn.objects.select_related().annotate(last_message=sq, last_message_date=sq2).all()
+#     context = {'chek_ins': chek_ins}
+#     return render(request, "hotel/admin-info.html", context=context)
 
 
 @staff_member_required

@@ -7,10 +7,10 @@ app_name = "hotel"
 
 urlpatterns = [
     path('profile/', views.profile, name='profile'),
-    path('messages-history/<int:user_id>', views.messages_history, name='messages-history'),
-    path('admin-info/', views.admin_info, name='admin-info'),
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", views.logout_view, name="logout"),
+    path('messages-history/<int:user_id>', views.messages_history, name='messages-history'),
+    path('admin-info/', views.admin_info, name='admin-info'),
     path('room/check-in/<int:pk>/', views.chek_in, name='check-in'),
     path("room/reservation/<int:pk>", views.make_reservation, name='reservation'),
     path('room/delete/<int:pk>', views.delete_room_page, name='delete'),
