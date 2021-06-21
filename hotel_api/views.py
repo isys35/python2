@@ -1,6 +1,6 @@
-import datetime
 from decimal import Decimal
 
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.db.models import Avg, Subquery, OuterRef
 from rest_framework import status
@@ -16,7 +16,7 @@ from rest_framework.authentication import BasicAuthentication, SessionAuthentica
 from hotel_api.serializers import RoomSerializer, TypeServiceSerializer, \
     CreateReservationSerializer, CreateCheckInSerializer, \
     RateTypeServiceSerializer, ReservationSerializer, CheckInSerializer, CreateMessageSerializer, MessageSerializer, \
-    AvgAllServices, CreateRoomSerializer
+    AvgAllServices, CreateRoomSerializer, UserLoginSerializer
 
 
 class ReadOnly(BasePermission):
@@ -27,8 +27,6 @@ class ReadOnly(BasePermission):
 class RoomAPIList(ListAPIView):
     queryset = Room.objects
     serializer_class = RoomSerializer
-    authentication_classes = [BasicAuthentication, SessionAuthentication]
-    permission_classes = [IsAuthenticated]
 
 
 class CreateRoomAPI(ListCreateAPIView):
@@ -185,3 +183,16 @@ class AvgAllServicesAPI(APIView):
         serializer = self.serializer_class(data={'avg_rate': avg_types_rate})
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class LoginAPI(APIView):
+    serializer_class = UserLoginSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = authenticate(username=serializer.data['username'], password=serializer.data['password'])
+        if user is not None:
+            login(request, user)
+            return Response({"success": True}, status=status.HTTP_200_OK)
+        return Response({"success": False}, status=status.HTTP_418_IM_A_TEAPOT)

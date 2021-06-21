@@ -20,5 +20,6 @@ urlpatterns = [
     path('room_checkins/<int:room_id>', views.RoomCheckInAPIList.as_view()),
     path('send_message/', views.SendMessageAPI.as_view(), name='send-message'),
     path('messages/<int:user_id>', views.MessagesAPIList.as_view(), name='message-history'),
-    path('avg-rate-all-services/', views.AvgAllServicesAPI.as_view(), name='avg-rate-all-services')
+    path('avg-rate-all-services/', views.AvgAllServicesAPI.as_view(), name='avg-rate-all-services'),
+    path('login/', views.LoginAPI.as_view(), name='login')
 ]

@@ -119,3 +119,12 @@ class RoomSerializer(serializers.ModelSerializer):
 
     def get_room_class(self, instance):
         return instance.get_room_class_display()
+
+
+class UserLoginSerializer(serializers.ModelSerializer):
+    username = CharField()
+    password = CharField()
+
+    class Meta:
+        model = User
+        fields = ['username', 'password']

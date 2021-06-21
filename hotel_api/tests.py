@@ -227,7 +227,6 @@ class MessageTest(TestCase):
         self.administrator.save()
         self.user = User.objects.create_user(username='testuser')
 
-
     def test_send_message(self):
         self.client.force_login(self.user)
         url = reverse('hotel-api:send-message')
@@ -237,7 +236,7 @@ class MessageTest(TestCase):
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        #test last message in check_in
+        # test last message in check_in
         room_data = {
             "number": 14,
             "floor": 3,
@@ -255,8 +254,7 @@ class MessageTest(TestCase):
         CheckIn.objects.create(**checkin_data)
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Message.objects.first(), CheckIn.objects.get(**checkin_data).last_message_today)
-
+        self.assertEqual(Message.objects.last(), CheckIn.objects.get(**checkin_data).last_message_today)
 
         # test message-history
         self.client.force_login(self.administrator)
@@ -283,3 +281,18 @@ class AvgRateAllServicesTest(TestCase):
         self.type_service_6 = TypeService.objects.create(title='Тестовый сервис 6', avg_rate=2.14)
         response = self.client.get(url)
         self.assertEqual(response.data['avg_rate'], '3.65')
+
+
+class LoginAPiTest(TestCase):
+    def setUp(self) -> None:
+        self.user = User.objects.create_user(username='testuser', password='a4124ffds1243')
+
+    def test_login_api(self):
+        url = reverse('hotel-api:login')
+        data = {
+            'username': 'testuser',
+            'password': 'a4124ffds1243'
+
+        }
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
