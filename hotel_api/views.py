@@ -159,7 +159,8 @@ class SendMessageAPI(APIView):
         serializer.is_valid(raise_exception=True)
         message = Message.objects.create(author=request.user, text=serializer.data['text'])
         CheckIn.objects.filter(user=request.user).update(last_message_today=message)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer_message = MessageSerializer(message)
+        return Response(serializer_message.data, status=status.HTTP_201_CREATED)
 
 
 class MessagesAPIList(ListAPIView):

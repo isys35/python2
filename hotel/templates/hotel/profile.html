@@ -10,11 +10,11 @@
         <div class="form-group">
             <label for="text">Сообщение: </label>
             <textarea class="form-control" rows="5" id="text" name="text"></textarea>
-            <input type="submit" class="btn btn-success" value="Отправить">
         </div>
         <button id="send-message-btn" class="btn btn-success">Отправить</button>
     </div>
 {% endblock %}
 {% block scripts %}
     <script src="{% static "scripts/messeges.js" %}"></script>
+    <script src="{% static "scripts/send_message.js" %}"></script>
 {% endblock %}

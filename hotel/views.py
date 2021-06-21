@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
 
+
 def main_page(requests: WSGIRequest) -> HttpResponse:
     return render(requests, 'hotel/index.html')
 
@@ -50,13 +51,13 @@ def admin_info(request: WSGIRequest) -> HttpResponse:
 
 
 @staff_member_required
-def messages_history(request: WSGIRequest, user_id: int)-> HttpResponse:
+def messages_history(request: WSGIRequest, user_id: int) -> HttpResponse:
     context = {'user_id': user_id}
     return render(request, "hotel/messages-history.html", context=context)
 
 
 @login_required
-def profile(request: WSGIRequest)-> HttpResponse:
+def profile(request: WSGIRequest) -> HttpResponse:
     return render(request, "hotel/profile.html")
 
 
